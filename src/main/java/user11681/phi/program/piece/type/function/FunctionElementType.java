@@ -8,4 +8,9 @@ import user11681.phi.program.piece.type.ElementType;
 
 public interface FunctionElementType extends ElementType {
     TypedActionResult<Text> execute(Element element, Input input);
+
+    @Override
+    default String namespace() {
+        return "function";
+    }
 }

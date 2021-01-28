@@ -1,0 +1,8 @@
+{
+    "phi.namespace.function": "Function",
+    "phi.namespace.parameter": "Parameter",
+    "phi.element.function.phi.accelerate": "accelerate",
+    "phi.element.function.phi.blink": "blink",
+    "phi.element.parameter.phi.attacker": "attacker",
+    "phi.element.parameter.phi.executor": "executor"
+}

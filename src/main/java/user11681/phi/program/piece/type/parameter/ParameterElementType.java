@@ -11,4 +11,9 @@ public interface ParameterElementType<R> extends ElementType {
     default int cost(Element element) {
         return 0;
     }
+
+    @Override
+    default String namespace() {
+        return "parameter";
+    }
 }

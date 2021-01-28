@@ -5,7 +5,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -37,6 +39,8 @@ public interface ElementType {
 
     int cost(Element element);
 
+    String namespace();
+
     default Element defaultElement() {
         return new Element(this);
     }
@@ -45,7 +49,7 @@ public interface ElementType {
     default List<Text> tooltip() {
         List<Text> lines = new ObjectArrayList<>();
 
-        lines.add(this.name());
+        lines.add(new LiteralText(String.format("%s: %s", I18n.translate("phi.namespace." + this.namespace()), this.name().getString())));
 
         return lines;
     }
@@ -54,6 +58,6 @@ public interface ElementType {
     default Text name() {
         Identifier identifier = registry.getId(this);
 
-        return new TranslatableText(String.format("element.%s.%s", identifier.getNamespace(), identifier.getPath()));
+        return new TranslatableText(String.format("phi.element.%s.%s.%s", this.namespace(), identifier.getNamespace(), identifier.getPath()));
     }
 }
