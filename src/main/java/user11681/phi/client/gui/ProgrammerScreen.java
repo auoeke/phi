@@ -1,42 +1,30 @@
 package user11681.phi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
+import user11681.phi.client.PhiClient;
+import user11681.phi.program.piece.Element;
 import user11681.phi.program.piece.Program;
-import user11681.phi.program.piece.type.ElementType;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
-    private static final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-
     private static final Identifier background = Phi.id("textures/gui/programmer.png");
     private static final Identifier frame = Phi.id("textures/gui/frame.png");
-    private static final Identifier search = Phi.id("textures/gui/search.png");
 
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
 
-    private static final int SEARCH_WIDTH = 90;
-    private static final int SEARCH_HEIGHT = 126;
+    private final Element[][] elements = new Element[9][9];
 
-    private final ReferenceArrayList<ElementType> searchElements = new ReferenceArrayList<>(ElementType.registry.iterator());
-
-    private ProgramSearchFieldWidget searchField;
-
+    private ElementSearchWidget search;
     private Program program;
-
-    private ElementSlot focused;
 
     private int x = 4;
     private int y = 4;
@@ -50,15 +38,15 @@ public class ProgrammerScreen extends Screen {
     private int frameX;
     private int frameY;
 
-    private int searchX;
-    private int searchY;
-
-    private boolean searching;
-
     public ProgrammerScreen(Text title, Program program) {
         super(title);
 
         this.program = program;
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     @Override
@@ -71,26 +59,14 @@ public class ProgrammerScreen extends Screen {
         this.gridX = this.backgroundX + 8;
         this.gridY = this.backgroundY + 8;
 
-        this.searchField = new ProgramSearchFieldWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
-    }
-
-    private void computeElements() {
-        this.searchElements.clear();
-
-        String searchText = this.searchField.getText();
-
-        for (ElementType type : ElementType.registry) {
-            if (type.name().getString().contains(searchText)) {
-                this.searchElements.add(type);
-            }
-        }
+        this.search = new ElementSearchWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
     }
 
     @Override
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrixes);
 
-        textureManager.bindTexture(background);
+        PhiClient.textureManager.bindTexture(background);
         drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT);
 
         this.frameX = this.gridX + this.x * 18;
@@ -98,108 +74,95 @@ public class ProgrammerScreen extends Screen {
 
         this.renderFrame(matrixes);
 
-        if (this.searching) {
-            this.renderSearchWindow(matrixes);
+        super.render(matrixes, mouseX, mouseY, delta);
 
-            int elementCount = this.searchElements.size();
-            int rowLength = 4;
-            int padding = 2;
-            int borderPadding = 4;
+        if (this.search != null) {
+            ElementSlot hovered = this.search.hovered;
 
-            for (int i = 0; i < elementCount; i++) {
-                this.searchElements.get(i).render(matrixes, this.searchX + borderPadding + (16 + padding) * i, this.searchY + 10 * (2 + i / rowLength));
+            if (hovered != null) {
+                this.renderTooltip(matrixes, hovered.element.type.tooltip(), mouseX, mouseY);
             }
         }
-
-        super.render(matrixes, mouseX, mouseY, delta);
     }
 
     private void renderFrame(MatrixStack matrixes) {
-        textureManager.bindTexture(frame);
+        PhiClient.textureManager.bindTexture(frame);
         drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
     }
 
-    private void renderSearchWindow(MatrixStack matrixes) {
-        RenderSystem.enableBlend();
-
-        textureManager.bindTexture(search);
-        drawTexture(matrixes, this.searchX, this.searchY, 0, 0, SEARCH_WIDTH, SEARCH_HEIGHT, 128, 128);
-    }
-
     @Override
-    public boolean charTyped(char character, int keyCode) {
-        if (super.charTyped(character, keyCode)) {
-            this.computeElements();
-
-            return true;
-        }
-
-        return false;
+    public boolean shouldCloseOnEsc() {
+        return !this.buttons.contains(this.search) && super.shouldCloseOnEsc();
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
-            if (this.searchField.getText().isEmpty()) {
-                this.computeElements();
-            }
+        if (this.buttons.contains(this.search)) {
+            switch (keyCode) {
+                case GLFW.GLFW_KEY_ESCAPE:
+                    this.buttons.remove(this.search);
 
+                    return true;
+
+                case GLFW.GLFW_KEY_TAB:
+                    if (this.search.keyPressed(keyCode, scanCode, modifiers)) {
+                        return true;
+                    }
+            }
+        }
+
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
 
-        if (this.searching) {
-        } else {
-            switch (keyCode) {
-                case GLFW.GLFW_KEY_LEFT:
-                case GLFW.GLFW_KEY_A:
-                    if (this.x > 0) {
-                        --this.x;
-                    }
+        if (this.buttons.contains(this.search)) {
+            return false;
+        }
 
-                    break;
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_LEFT:
+            case GLFW.GLFW_KEY_A:
+                if (this.x > 0) {
+                    --this.x;
+                }
 
-                case GLFW.GLFW_KEY_RIGHT:
-                case GLFW.GLFW_KEY_D:
-                    if (this.x < Program.X - 1) {
-                        ++this.x;
-                    }
+                break;
 
-                    break;
+            case GLFW.GLFW_KEY_RIGHT:
+            case GLFW.GLFW_KEY_D:
+                if (this.x < Program.SIZE - 1) {
+                    ++this.x;
+                }
 
-                case GLFW.GLFW_KEY_S:
-                case GLFW.GLFW_KEY_DOWN:
-                    if (this.y < Program.Y - 1) {
-                        ++this.y;
-                    }
+                break;
 
-                    break;
+            case GLFW.GLFW_KEY_S:
+            case GLFW.GLFW_KEY_DOWN:
+                if (this.y < Program.SIZE - 1) {
+                    ++this.y;
+                }
 
-                case GLFW.GLFW_KEY_UP:
-                case GLFW.GLFW_KEY_W:
-                    if (this.y > 0) {
-                        --this.y;
-                    }
+                break;
 
-                    break;
+            case GLFW.GLFW_KEY_UP:
+            case GLFW.GLFW_KEY_W:
+                if (this.y > 0) {
+                    --this.y;
+                }
 
-                case GLFW.GLFW_KEY_ENTER:
-                    this.searching = true;
+                break;
 
-                    this.searchX = Math.min(this.frameX, this.width - SEARCH_WIDTH);
-                    this.searchY = Math.min(this.frameY, this.height - SEARCH_HEIGHT);
+            case GLFW.GLFW_KEY_ENTER:
+                this.search.init(Math.min(this.frameX + 17, this.width - ElementSearchWidget.WIDTH), Math.min(this.frameY - 1, this.height - ElementSearchWidget.HEIGHT));
 
-                    this.searchField.x = this.searchX + (SEARCH_WIDTH - this.searchField.getWidth()) / 2;
-                    this.searchField.y = this.searchY + 5;
+                this.addButton(this.search);
+                this.focusOn(this.search);
+                this.search.setSelected(true);
 
-                    this.addButton(this.searchField);
-                    this.focusOn(this.searchField);
-                    this.searchField.setSelected(true);
+                break;
 
-                    break;
-
-                default:
-                    return false;
-            }
+            default:
+                return false;
         }
 
         return true;

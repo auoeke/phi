@@ -9,15 +9,18 @@ import user11681.phi.Phi;
 
 @SuppressWarnings("MethodDoesntCallSuperMethod")
 public class Program implements Cloneable {
-    public static final int X = 9;
-    public static final int Y = 9;
+    public static final int SIZE = 9;
 
     protected final Element[][] grid = new Element[9][9];
 
     public void toTag(CompoundTag tag) {
-        for (Element[] elements : this.grid) {
-            for (Element element : elements) {
-                element.toTag(tag);
+        ListTag grid = tag.getList(Phi.ID, NbtType.LIST);
+
+        for (int i = 0, length = this.grid.length; i < length; i++) {
+            ListTag column = grid.getList(i);
+
+            for (int j = 0, elementsLength = this.grid[i].length; j < elementsLength; j++) {
+                column.add(this.grid[i][j].toTag());
             }
         }
     }

@@ -5,20 +5,20 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
-import user11681.phi.program.piece.FunctionElement;
+import user11681.phi.program.piece.Element;
 import user11681.phi.program.piece.Input;
 import user11681.phi.program.piece.type.TexturedElementType;
 
-public class AccelerateElementType extends TexturedElementType implements FunctionElementType {
-    public AccelerateElementType(Identifier texture) {
+public class AccelerateFunction extends TexturedElementType implements FunctionElementType {
+    public AccelerateFunction(Identifier texture) {
         super(texture);
     }
 
     @Override
-    public TypedActionResult<Text> execute(FunctionElement piece, Input input) {
+    public TypedActionResult<Text> execute(Element element, Input input) {
         Entity target = input.get("target");
         Vec3d direction = ((Vec3d) input.get("direction")).normalize();
-        double multiplier = 0.1 * piece.power;
+        double multiplier = 0.1 * element.tag.getInt("power");
 
         target.addVelocity(direction.x * multiplier, direction.y * multiplier, direction.z * multiplier);
 
@@ -26,7 +26,7 @@ public class AccelerateElementType extends TexturedElementType implements Functi
     }
 
     @Override
-    public int cost(FunctionElement piece) {
-        return 200 * piece.power;
+    public int cost(Element piece) {
+        return 200 * piece.tag.getInt("power");
     }
 }

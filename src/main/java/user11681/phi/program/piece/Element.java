@@ -7,28 +7,53 @@ import user11681.phi.program.piece.type.ElementType;
 @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "ConstantConditions"})
 public class Element implements Cloneable {
     public final ElementType type;
+    public final CompoundTag tag;
 
     public Connections ingoing;
     public Connections outgoing;
 
     public Element(ElementType type) {
-        this.type = type;
+        this(type, new CompoundTag());
     }
 
-    public void toTag(CompoundTag tag) {
+    public Element(ElementType type, CompoundTag tag) {
+        this.type = type;
+        this.tag = tag;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+
+        if (that instanceof Element) {
+            Element element = (Element) that;
+
+            return this.type == element.type && this.tag.equals(element.tag);
+        }
+
+        return false;
+    }
+
+    public CompoundTag toTag() {
+        CompoundTag tag = this.tag.copy();
+
         tag.putString("id", ElementType.registry.getId(this.type).toString());
+
+        return tag;
     }
 
     public static Element fromTag(CompoundTag tag) {
-        ElementType type = ElementType.registry.get(new Identifier(tag.getString("id")));
+        String identifier = tag.getString("id");
 
-        if (type == null) {
+        if (identifier.isEmpty()) {
             return null;
         }
 
         tag.remove("id");
 
-        return type.fromTag(tag);
+        return new Element(ElementType.registry.get(new Identifier(identifier)));
     }
 
     @Override
