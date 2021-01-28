@@ -1,0 +1,25 @@
+{
+    "schemaVersion": 1,
+    "id": "phi",
+    "version": "0.0.0",
+
+    "authors": ["user11681"],
+    "contact": {
+        "sources": "https://github.com/user11681/phi",
+        "issues": "https://github.com/user11681/phi/issues"
+    },
+
+    "entrypoints": {
+        "main": ["user11681.phi.Phi"],
+        "client": ["user11681.phi.Phi"],
+        "cardinal-components": ["user11681.phi.Phi"]
+    },
+
+    "custom": {
+        "cardinal-components": [
+            "phi:interpreter",
+            "phi:drive",
+            "phi:phi"
+        ]
+    }
+}

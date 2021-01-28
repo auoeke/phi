@@ -1,0 +1,13 @@
+plugins {
+    id("wheel").version("snapshot")
+}
+
+project.group("user11681")
+project.version("0.0.0")
+
+dependencies {
+    mod("api")
+    mod("cardinal-components-base")
+    mod("cardinal-components-entity")
+    mod("cardinal-components-item")
+}
