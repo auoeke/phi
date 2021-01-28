@@ -85,15 +85,21 @@ public class ProgrammerScreen extends Screen {
 
         this.renderFrame(matrixes);
 
-        if (this.search != null) {
-            ElementSlot hovered = this.search.hovered;
+        super.render(matrixes, mouseX, mouseY, delta);
 
-            if (hovered != null) {
-                this.renderTooltip(matrixes, hovered.element.type.tooltip(), mouseX, mouseY);
+        if (this.search != null) {
+            ElementSlot selected = this.search.focused;
+
+            if (selected != null && hasControlDown()) {
+                this.renderTooltip(matrixes, selected.element.type.tooltip(), selected.x, selected.y + 24);
+            } else {
+                selected = this.search.hovered;
+
+                if (selected != null) {
+                    this.renderTooltip(matrixes, selected.element.type.tooltip(), mouseX, mouseY);
+                }
             }
         }
-
-        super.render(matrixes, mouseX, mouseY, delta);
     }
 
     private void renderFrame(MatrixStack matrixes) {
@@ -102,15 +108,11 @@ public class ProgrammerScreen extends Screen {
     }
 
     @Override
-    public boolean shouldCloseOnEsc() {
-        return !this.buttons.contains(this.search) && super.shouldCloseOnEsc();
-    }
-
-    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.buttons.contains(this.search)) {
             switch (keyCode) {
                 case GLFW.GLFW_KEY_ESCAPE:
+                    this.search.deinit();
                     this.buttons.remove(this.search);
 
                     return true;
@@ -146,33 +148,25 @@ public class ProgrammerScreen extends Screen {
         switch (keyCode) {
             case GLFW.GLFW_KEY_LEFT:
             case GLFW.GLFW_KEY_A:
-                if (this.x > 0) {
-                    --this.x;
-                }
+                this.x = (this.x + Program.SIZE - 1) % Program.SIZE;
 
                 break;
 
             case GLFW.GLFW_KEY_RIGHT:
             case GLFW.GLFW_KEY_D:
-                if (this.x < Program.SIZE - 1) {
-                    ++this.x;
-                }
+                this.x = (this.x + 1) % Program.SIZE;
 
                 break;
 
             case GLFW.GLFW_KEY_S:
             case GLFW.GLFW_KEY_DOWN:
-                if (this.y < Program.SIZE - 1) {
-                    ++this.y;
-                }
+                this.y = (this.y + 1) % Program.SIZE;
 
                 break;
 
             case GLFW.GLFW_KEY_UP:
             case GLFW.GLFW_KEY_W:
-                if (this.y > 0) {
-                    --this.y;
-                }
+                this.y = (this.y + Program.SIZE - 1) % Program.SIZE;
 
                 break;
 

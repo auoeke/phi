@@ -101,7 +101,14 @@ public class ElementSearchWidget extends TextFieldWidget {
         this.x = backgroundX + (WIDTH - this.width) / 2;
         this.y = backgroundY + 5;
 
+        this.slots.clear();
+
         this.computeElements();
+    }
+
+    public void deinit() {
+        this.hovered = null;
+        this.focused = null;
     }
 
     private void computeElements() {
