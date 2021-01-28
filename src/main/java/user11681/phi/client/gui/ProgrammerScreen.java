@@ -1,6 +1,7 @@
 package user11681.phi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,6 +14,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
 import user11681.phi.program.piece.Program;
+import user11681.phi.program.piece.type.ElementType;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
@@ -28,9 +30,13 @@ public class ProgrammerScreen extends Screen {
     private static final int SEARCH_WIDTH = 90;
     private static final int SEARCH_HEIGHT = 126;
 
-    private final ProgramSearchFieldWidget searchField = new ProgramSearchFieldWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
+    private final ReferenceArrayList<ElementType> searchElements = new ReferenceArrayList<>(ElementType.registry.iterator());
+
+    private ProgramSearchFieldWidget searchField;
 
     private Program program;
+
+    private ElementSlot focused;
 
     private int x = 4;
     private int y = 4;
@@ -64,13 +70,25 @@ public class ProgrammerScreen extends Screen {
 
         this.gridX = this.backgroundX + 8;
         this.gridY = this.backgroundY + 8;
+
+        this.searchField = new ProgramSearchFieldWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
+    }
+
+    private void computeElements() {
+        this.searchElements.clear();
+
+        String searchText = this.searchField.getText();
+
+        for (ElementType type : ElementType.registry) {
+            if (type.name().getString().contains(searchText)) {
+                this.searchElements.add(type);
+            }
+        }
     }
 
     @Override
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrixes);
-
-        super.render(matrixes, mouseX, mouseY, delta);
 
         textureManager.bindTexture(background);
         drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT);
@@ -82,7 +100,18 @@ public class ProgrammerScreen extends Screen {
 
         if (this.searching) {
             this.renderSearchWindow(matrixes);
+
+            int elementCount = this.searchElements.size();
+            int rowLength = 4;
+            int padding = 2;
+            int borderPadding = 4;
+
+            for (int i = 0; i < elementCount; i++) {
+                this.searchElements.get(i).render(matrixes, this.searchX + borderPadding + (16 + padding) * i, this.searchY + 10 * (2 + i / rowLength));
+            }
         }
+
+        super.render(matrixes, mouseX, mouseY, delta);
     }
 
     private void renderFrame(MatrixStack matrixes) {
@@ -98,13 +127,27 @@ public class ProgrammerScreen extends Screen {
     }
 
     @Override
+    public boolean charTyped(char character, int keyCode) {
+        if (super.charTyped(character, keyCode)) {
+            this.computeElements();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            if (this.searchField.getText().isEmpty()) {
+                this.computeElements();
+            }
+
             return true;
         }
 
         if (this.searching) {
-
         } else {
             switch (keyCode) {
                 case GLFW.GLFW_KEY_LEFT:
@@ -145,10 +188,12 @@ public class ProgrammerScreen extends Screen {
                     this.searchX = Math.min(this.frameX, this.width - SEARCH_WIDTH);
                     this.searchY = Math.min(this.frameY, this.height - SEARCH_HEIGHT);
 
-                    this.searchField.x = this.searchX + (SEARCH_WIDTH - this.searchField.getWidth());
+                    this.searchField.x = this.searchX + (SEARCH_WIDTH - this.searchField.getWidth()) / 2;
                     this.searchField.y = this.searchY + 5;
 
                     this.addButton(this.searchField);
+                    this.focusOn(this.searchField);
+                    this.searchField.setSelected(true);
 
                     break;
 

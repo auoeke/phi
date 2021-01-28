@@ -8,10 +8,14 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import user11681.phi.Phi;
 
 public abstract class TexturedElementType implements ElementType {
     @Environment(EnvType.CLIENT)
     protected static final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+
+    @Environment(EnvType.CLIENT)
+    protected static final Identifier elementBase = Phi.id("textures/element/base.png");
 
     @Environment(EnvType.CLIENT)
     protected Identifier texture;
@@ -25,8 +29,10 @@ public abstract class TexturedElementType implements ElementType {
     @Environment(EnvType.CLIENT)
     @Override
     public void render(MatrixStack matrixes, int x, int y) {
-        textureManager.bindTexture(this.texture);
+        textureManager.bindTexture(elementBase);
+        DrawableHelper.drawTexture(matrixes, x, y, 0, 0, 16, 16, 16, 16);
 
-        DrawableHelper.drawTexture(matrixes, x, y, 16, 16, 0, 0, 16, 16);
+        textureManager.bindTexture(this.texture);
+        DrawableHelper.drawTexture(matrixes, x, y, 0, 0, 16, 16, 16, 16);
     }
 }
