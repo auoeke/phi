@@ -10,7 +10,6 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
 import user11681.phi.client.PhiClient;
-import user11681.phi.program.piece.Element;
 import user11681.phi.program.piece.Program;
 
 @Environment(EnvType.CLIENT)
@@ -21,7 +20,7 @@ public class ProgrammerScreen extends Screen {
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
 
-    private final Element[][] elements = new Element[9][9];
+    private final ElementSlot[][] elements = new ElementSlot[Program.SIZE][Program.SIZE];
 
     private ElementSearchWidget search;
     private Program program;
@@ -60,6 +59,12 @@ public class ProgrammerScreen extends Screen {
         this.gridY = this.backgroundY + 8;
 
         this.search = new ElementSearchWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
+
+        for (int i = 0, length = this.elements.length; i < length; i++) {
+            for (int j = 0; j < this.elements[i].length; j++) {
+                this.elements[i][j] = new ElementSlot(this.program.get(i, j), this.backgroundX + 8 + 18 * i, this.backgroundY + 8 + 18 * j);
+            }
+        }
     }
 
     @Override
@@ -72,9 +77,13 @@ public class ProgrammerScreen extends Screen {
         this.frameX = this.gridX + this.x * 18;
         this.frameY = this.gridY + this.y * 18;
 
-        this.renderFrame(matrixes);
+        for (ElementSlot[] row : this.elements) {
+            for (ElementSlot element : row) {
+                element.render(matrixes);
+            }
+        }
 
-        super.render(matrixes, mouseX, mouseY, delta);
+        this.renderFrame(matrixes);
 
         if (this.search != null) {
             ElementSlot hovered = this.search.hovered;
@@ -83,6 +92,8 @@ public class ProgrammerScreen extends Screen {
                 this.renderTooltip(matrixes, hovered.element.type.tooltip(), mouseX, mouseY);
             }
         }
+
+        super.render(matrixes, mouseX, mouseY, delta);
     }
 
     private void renderFrame(MatrixStack matrixes) {
@@ -104,10 +115,23 @@ public class ProgrammerScreen extends Screen {
 
                     return true;
 
+                case GLFW.GLFW_KEY_ENTER:
+                    if (this.search.focused == null) {
+                        break;
+                    }
+
+                    this.elements[this.x][this.y].element = this.search.focused.element.type.defaultElement();
+
+                    break;
+
                 case GLFW.GLFW_KEY_TAB:
                     if (this.search.keyPressed(keyCode, scanCode, modifiers)) {
                         return true;
                     }
+            }
+        } else {
+            if (keyCode == GLFW.GLFW_KEY_DELETE) {
+                this.elements[this.x][this.y].element = null;
             }
         }
 

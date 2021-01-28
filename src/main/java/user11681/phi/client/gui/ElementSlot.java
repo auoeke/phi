@@ -23,7 +23,7 @@ public class ElementSlot {
     public Element element;
 
     public ElementSlot(ElementType element, int x, int y) {
-        this(new Element(element), x, y);
+        this(element.defaultElement(), x, y);
     }
 
     public ElementSlot(Element element, int x, int y) {

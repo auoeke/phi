@@ -37,6 +37,10 @@ public interface ElementType {
 
     int cost(Element element);
 
+    default Element defaultElement() {
+        return new Element(this);
+    }
+
     @Environment(EnvType.CLIENT)
     default List<Text> tooltip() {
         List<Text> lines = new ObjectArrayList<>();

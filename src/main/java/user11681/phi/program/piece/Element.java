@@ -13,12 +13,8 @@ public class Element implements Cloneable {
     public Connections outgoing;
 
     public Element(ElementType type) {
-        this(type, new CompoundTag());
-    }
-
-    public Element(ElementType type, CompoundTag tag) {
         this.type = type;
-        this.tag = tag;
+        this.tag = new CompoundTag();
     }
 
     @Override
