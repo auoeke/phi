@@ -3,6 +3,7 @@ package user11681.phi.util;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import org.jetbrains.annotations.NotNull;
 import user11681.phi.client.gui.Point;
@@ -38,6 +39,12 @@ public class ProgramGrid<T> implements Iterable<T> {
         int i = this.elements.indexOf(element);
 
         return i < 0 ? null : new Point(i % Program.SIZE, i / Program.SIZE);
+    }
+
+    public void forEach(Consumer<? super T> action) {
+        for (int i = 0; i < LENGTH; i++) {
+            action.accept(this.get(i));
+        }
     }
 
     public void forEach(IntConsumer action) {

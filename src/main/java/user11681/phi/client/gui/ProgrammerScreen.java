@@ -1,5 +1,6 @@
 package user11681.phi.client.gui;
 
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -24,6 +25,7 @@ public class ProgrammerScreen extends Screen {
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
 
+    private final ReferenceArrayList<ElementGrid> gridStates = new ReferenceArrayList<>();
     private final ElementGrid slots = new ElementGrid();
     private final BlockPos position;
 
@@ -93,7 +95,7 @@ public class ProgrammerScreen extends Screen {
 
         super.render(matrixes, mouseX, mouseY, delta);
 
-        if (this.buttons.contains(this.search)) {
+        if (this.search()) {
             if (!hasControlDown() || this.renderTooltip(this.search.focused, matrixes)) {
                 this.renderTooltip(this.search.hovered, matrixes, mouseX, mouseY);
             }
@@ -106,7 +108,7 @@ public class ProgrammerScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.buttons.contains(this.search)) {
+        if (this.search()) {
             switch (keyCode) {
                 case GLFW.GLFW_KEY_ESCAPE:
                     this.search(false);
@@ -119,7 +121,6 @@ public class ProgrammerScreen extends Screen {
                     }
 
                     this.insertElement();
-                    this.search(false);
 
                     return true;
 
@@ -134,12 +135,16 @@ public class ProgrammerScreen extends Screen {
             return true;
         }
 
-        if (this.buttons.contains(this.search)) {
+        if (this.search()) {
             return false;
         }
 
         if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            this.currentSlot().element = null;
+            if (Screen.hasControlDown() && Screen.hasShiftDown()) {
+                this.slots.forEach((ElementSlot slot) -> slot.element = null);
+            } else {
+                this.currentSlot().element = null;
+            }
 
             return true;
         }
@@ -187,6 +192,15 @@ public class ProgrammerScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Point point = this.slots.find(this.slots.slot(mouseX, mouseY));
 
+        int x = this.search.backgroundX;
+        int y = this.search.backgroundY;
+
+        if (this.search() && mouseX >= x && mouseX <= x + ElementSearchWidget.WIDTH && mouseY >= y && mouseY <= y + ElementSearchWidget.HEIGHT) {
+            return this.search.mouseClicked(mouseX, mouseY, button);
+        }
+
+        this.search(false);
+
         if (point != null) {
             this.x = point.x;
             this.y = point.y;
@@ -203,8 +217,8 @@ public class ProgrammerScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    private boolean seaarch() {
-        return this.getFocused() == this.search;
+    private boolean search() {
+        return this.buttons.contains(this.search);
     }
 
     private ElementSlot currentSlot() {
@@ -261,6 +275,8 @@ public class ProgrammerScreen extends Screen {
     }
 
     public void insertElement(ElementType type) {
+        this.search(false);
+
         InsertElementPacket.instance.send(PacketByteBufs.create().writeBlockPos(this.position).writeVarInt(this.x + this.y * Program.SIZE).writeIdentifier(type.id()));
 
         this.currentSlot().element = type.defaultElement();
