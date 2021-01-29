@@ -7,7 +7,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import user11681.phi.Phi;
-import user11681.phi.client.PhiClient;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.ElementType;
 
@@ -62,7 +61,7 @@ public class ElementSlot {
         }
 
         if (this.focused) {
-            PhiClient.textureManager.bindTexture(focusedBorder);
+            ScreenUtil.bindTexture(focusedBorder);
             DrawableHelper.drawTexture(matrixes, this.x, this.y, 0, 0, 16, 16, 16, 16);
         }
     }

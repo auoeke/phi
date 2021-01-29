@@ -1,11 +1,13 @@
 package user11681.phi.program.element.type.operator;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import net.minecraft.util.Identifier;
+import user11681.phi.client.PhiLocalization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
 import user11681.phi.program.transaction.Transaction;
+import user11681.phi.program.transaction.ValueType;
 import user11681.phi.program.transaction.Variable;
 
 public class MultiplyOperator extends TexturedElementType implements OperatorElementType<Double> {
@@ -15,12 +17,12 @@ public class MultiplyOperator extends TexturedElementType implements OperatorEle
 
     @Override
     public Variable output() {
-        return Variable.number;
+        return ValueType.number.variable(PhiLocalization.productVariable);
     }
 
     @Override
-    public Collection<Variable> input() {
-        return Collections.singleton(Variable.number);
+    public List<Variable> input() {
+        return Collections.singletonList(ValueType.number.variable(PhiLocalization.operandVariable));
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import user11681.phi.Phi;
-import user11681.phi.client.PhiClient;
+import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.program.element.Element;
 
 public abstract class TexturedElementType implements ElementType {
@@ -26,10 +26,10 @@ public abstract class TexturedElementType implements ElementType {
     @Environment(EnvType.CLIENT)
     @Override
     public void render(Element element, MatrixStack matrixes, int x, int y) {
-        PhiClient.textureManager.bindTexture(elementBase);
+        ScreenUtil.bindTexture(elementBase);
         DrawableHelper.drawTexture(matrixes, x, y, 0, 0, 16, 16, 16, 16);
 
-        PhiClient.textureManager.bindTexture(this.texture);
+        ScreenUtil.bindTexture(this.texture);
         DrawableHelper.drawTexture(matrixes, x, y, 0, 0, 16, 16, 16, 16);
     }
 }

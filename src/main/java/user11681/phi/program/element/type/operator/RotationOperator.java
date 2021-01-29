@@ -1,12 +1,14 @@
 package user11681.phi.program.element.type.operator;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import user11681.phi.client.PhiLocalization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
 import user11681.phi.program.transaction.Transaction;
+import user11681.phi.program.transaction.ValueType;
 import user11681.phi.program.transaction.Variable;
 
 public class RotationOperator extends TexturedElementType implements OperatorElementType<Vec3d> {
@@ -16,12 +18,12 @@ public class RotationOperator extends TexturedElementType implements OperatorEle
 
     @Override
     public Variable output() {
-        return Variable.vector;
+        return ValueType.vector.variable(PhiLocalization.directionVariable);
     }
 
     @Override
-    public Collection<Variable> input() {
-        return Collections.singleton(Variable.entity);
+    public List<Variable> input() {
+        return Collections.singletonList(ValueType.entity.variable(PhiLocalization.targetVariable));
     }
 
     @Override

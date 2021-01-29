@@ -13,4 +13,9 @@ public class PhiLocalization {
     public static final TranslatableText entityType = new TranslatableText("phi.type.entity");
     public static final TranslatableText numberType = new TranslatableText("phi.type.number");
     public static final TranslatableText vectorType = new TranslatableText("phi.type.vector");
+
+    public static final TranslatableText directionVariable = new TranslatableText("phi.variable.direction");
+    public static final TranslatableText operandVariable = new TranslatableText("phi.variable.operand");
+    public static final TranslatableText productVariable = new TranslatableText("phi.variable.product");
+    public static final TranslatableText targetVariable = new TranslatableText("phi.variable.target");
 }

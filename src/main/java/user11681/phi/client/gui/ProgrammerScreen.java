@@ -1,6 +1,7 @@
 package user11681.phi.client.gui;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -9,29 +10,36 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3f;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
-import user11681.phi.client.PhiClient;
 import user11681.phi.network.server.InsertElementPacket;
 import user11681.phi.program.Program;
 import user11681.phi.program.element.type.ElementType;
+import user11681.phi.program.element.type.TransactionElementType;
+import user11681.phi.program.transaction.Variable;
 import user11681.phi.util.Point;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
     private static final Identifier background = Phi.id("textures/gui/programmer.png");
+    private static final Identifier sidebar = Phi.id("textures/gui/programmer_sidebar.png");
     private static final Identifier focusFrame = Phi.id("textures/gui/focus_frame.png");
     private static final Identifier hoverFrame = Phi.id("textures/gui/hover_frame.png");
+    private static final Identifier arrow = Phi.id("textures/gui/arrow.png");
+    private static final Identifier arrows = Phi.id("textures/gui/arrows.png");
 
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
+
+    private static final int SIDEBAR_WIDTH = 80;
+    private static final int SIDEBAR_HEIGHT = 126;
 
     private final ReferenceArrayList<ElementGrid> gridStates = new ReferenceArrayList<>();
     private final ElementGrid slots = new ElementGrid();
     private final BlockPos position;
 
     private ElementSearchWidget search;
-    private Program program;
 
     private int x = 4;
     private int y = 4;
@@ -49,9 +57,8 @@ public class ProgrammerScreen extends Screen {
         super(title);
 
         this.position = position;
-        this.program = program;
 
-        this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = this.program.elements.get(x, y));
+        this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = program.elements.get(x, y));
     }
 
     @Override
@@ -83,7 +90,13 @@ public class ProgrammerScreen extends Screen {
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrixes);
 
-        PhiClient.textureManager.bindTexture(background);
+        ElementSlot focused = this.focusedSlot();
+
+        if (focused.element != null && focused.element.type instanceof TransactionElementType) {
+            this.renderTransactionSidebar(matrixes);
+        }
+
+        ScreenUtil.bindTexture(background);
         drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT);
 
         for (ElementSlot element : this.slots) {
@@ -96,14 +109,8 @@ public class ProgrammerScreen extends Screen {
 
         super.render(matrixes, mouseX, mouseY, delta);
 
-        if (this.search()) {
-            if (!hasControlDown() || this.renderTooltip(this.search.focused, matrixes)) {
-                this.renderTooltip(this.search.hovered, matrixes, mouseX, mouseY);
-            }
-        } else {
-            if (!hasControlDown() || this.renderTooltip(this.currentSlot(), matrixes)) {
-                this.renderTooltip(hovered, matrixes, mouseX, mouseY);
-            }
+        if (!this.search() && (!hasControlDown() || this.renderTooltip(focused, matrixes))) {
+            this.renderTooltip(hovered, matrixes, mouseX, mouseY);
         }
     }
 
@@ -121,7 +128,7 @@ public class ProgrammerScreen extends Screen {
                         break;
                     }
 
-                    this.insertElement();
+                    this.insertElement(this.search.focused.element.type);
 
                     return true;
 
@@ -144,7 +151,7 @@ public class ProgrammerScreen extends Screen {
             if (Screen.hasControlDown() && Screen.hasShiftDown()) {
                 this.slots.forEach((ElementSlot slot) -> slot.element = null);
             } else {
-                this.currentSlot().element = null;
+                this.focusedSlot().element = null;
             }
 
             return true;
@@ -219,7 +226,7 @@ public class ProgrammerScreen extends Screen {
         return this.buttons.contains(this.search);
     }
 
-    private ElementSlot currentSlot() {
+    private ElementSlot focusedSlot() {
         return this.slots.get(this.x, this.y);
     }
 
@@ -229,11 +236,11 @@ public class ProgrammerScreen extends Screen {
     }
 
     private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
-        PhiClient.textureManager.bindTexture(focusFrame);
+        ScreenUtil.bindTexture(focusFrame);
         drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
 
         if (hovered != null) {
-            PhiClient.textureManager.bindTexture(hoverFrame);
+            ScreenUtil.bindTexture(hoverFrame);
 
             if (this.frameX == hovered.x && this.frameY == hovered.y) {
                 drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 8, 8, 16, 16);
@@ -244,9 +251,51 @@ public class ProgrammerScreen extends Screen {
         }
     }
 
-    private boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {
+    private void renderTransactionSidebar(MatrixStack matrixes) {
+        ScreenUtil.bindTexture(sidebar);
+
+        matrixes.push();
+        matrixes.translate(this.backgroundX - SIDEBAR_WIDTH, this.backgroundY + 25, 0);
+
+        drawTexture(matrixes, 0, 0, 0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 256, 256);
+
+        ElementSlot slot = this.focusedSlot();
+        TransactionElementType<?> type = (TransactionElementType<?>) slot.element.type;
+
+        List<Variable> inputs = type.input();
+
+        for (int i = 0; i < inputs.size(); i++) {
+            int arrowX = SIDEBAR_WIDTH - 26;
+            int arrowY = 7 + 26 * i;
+
+            ScreenUtil.bindTexture(arrows);
+            drawTexture(matrixes, arrowX, arrowY, 0, 0, 22, 22, 22, 22);
+
+            this.textRenderer.drawWithShadow(matrixes, inputs.get(i).name, 5, arrowY + 5, -1);
+
+            ScreenUtil.bindTexture(arrow);
+
+            for (int j = 0; j != 4; j++) {
+                matrixes.push();
+                matrixes.translate(arrowX + 3, arrowY + 3, 0);
+                matrixes.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion((float) (Math.PI / 2 * j)));
+
+                drawTexture(matrixes, -16 * (j / 2), -16 * ((j + 1 & 2) >> 1), 0, 0, 16, 16, 16, 16);
+
+                matrixes.pop();
+            }
+        }
+
+        matrixes.pop();
+    }
+
+    private void renderArrows(MatrixStack matrixes, int x, int y) {
+
+    }
+
+    public boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {
         if (slot != null && slot.element != null) {
-            this.renderTooltip(matrixes, slot.element.type.tooltip(), slot.x, slot.y + 24);
+            this.renderTooltip(matrixes, slot.element.type.tooltip(), slot.x + 8, slot.y + 8);
 
             return false;
         }
@@ -254,7 +303,7 @@ public class ProgrammerScreen extends Screen {
         return true;
     }
 
-    private void renderTooltip(ElementSlot slot, MatrixStack matrixes, int x, int y) {
+    public void renderTooltip(ElementSlot slot, MatrixStack matrixes, int x, int y) {
         if (slot != null && slot.element != null) {
             this.renderTooltip(matrixes, slot.element.type.tooltip(), x, y);
         }
@@ -281,12 +330,8 @@ public class ProgrammerScreen extends Screen {
     public void insertElement(ElementType type) {
         this.search(false);
 
-        InsertElementPacket.instance.send(PacketByteBufs.create().writeBlockPos(this.position).writeVarInt(this.x + this.y * Program.SIZE).writeIdentifier(type.id()));
+        InsertElementPacket.instance.send(PacketByteBufs.create().writeBlockPos(this.position).writeVarInt(this.x + Program.SIZE * this.y).writeIdentifier(type.id()));
 
-        this.currentSlot().element = type.defaultElement();
-    }
-
-    private void insertElement() {
-        this.insertElement(this.search.focused.element.type);
+        this.focusedSlot().element = type.defaultElement();
     }
 }

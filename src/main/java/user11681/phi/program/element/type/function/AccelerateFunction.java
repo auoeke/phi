@@ -1,13 +1,15 @@
 package user11681.phi.program.element.type.function;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import user11681.phi.client.PhiLocalization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
 import user11681.phi.program.transaction.Transaction;
+import user11681.phi.program.transaction.ValueType;
 import user11681.phi.program.transaction.Variable;
 
 public class AccelerateFunction extends TexturedElementType implements FunctionElementType<Void> {
@@ -21,8 +23,8 @@ public class AccelerateFunction extends TexturedElementType implements FunctionE
     }
 
     @Override
-    public Collection<Variable> input() {
-        return Arrays.asList(Variable.entity, Variable.vector);
+    public List<Variable> input() {
+        return Arrays.asList(ValueType.entity.variable(PhiLocalization.targetVariable), ValueType.vector.variable(PhiLocalization.directionVariable));
     }
 
     @Override

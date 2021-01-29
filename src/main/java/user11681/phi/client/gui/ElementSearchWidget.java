@@ -3,16 +3,16 @@ package user11681.phi.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
-import user11681.phi.client.PhiClient;
 import user11681.phi.program.element.type.ElementType;
 
-public class ElementSearchWidget extends TextFieldWidget {
+public class ElementSearchWidget extends TextFieldWidget implements ProgrammerScreenAware {
     public static final int WIDTH = 89;
     public static final int HEIGHT = 125;
 
@@ -22,7 +22,7 @@ public class ElementSearchWidget extends TextFieldWidget {
 
     private static final Identifier search = Phi.id("textures/gui/search.png");
 
-    private final ProgrammerScreen parent;
+    private final ProgrammerScreen screen;
 
     public ElementSlot focused;
     public ElementSlot hovered;
@@ -32,19 +32,24 @@ public class ElementSearchWidget extends TextFieldWidget {
     public int backgroundX;
     public int backgroundY;
 
-    public ElementSearchWidget(TextRenderer textRenderer, ProgrammerScreen parent, int x, int y, int width, int height) {
+    public ElementSearchWidget(TextRenderer textRenderer, ProgrammerScreen screen, int x, int y, int width, int height) {
         super(textRenderer, x, y, width, height, LiteralText.EMPTY);
 
-        this.parent = parent;
+        this.screen = screen;
 
         this.setHasBorder(false);
+    }
+
+    @Override
+    public ProgrammerScreen screen() {
+        return this.screen;
     }
 
     @Override
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
         RenderSystem.enableBlend();
 
-        PhiClient.textureManager.bindTexture(search);
+        ScreenUtil.bindTexture(search);
         drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT, 128, 128);
 
         super.render(matrixes, mouseX, mouseY, delta);
@@ -57,6 +62,10 @@ public class ElementSearchWidget extends TextFieldWidget {
             if (mouseX >= slot.x && mouseX <= slot.x + 16 && mouseY >= slot.y && mouseY <= slot.y + 16) {
                 this.hovered = slot;
             }
+        }
+
+        if (!Screen.hasControlDown() || this.renderTooltip(this.focused, matrixes)) {
+            this.renderTooltip(this.hovered, matrixes, mouseX, mouseY);
         }
     }
 
@@ -103,7 +112,7 @@ public class ElementSearchWidget extends TextFieldWidget {
         ElementSlot slot = this.slot(mouseX, mouseY);
 
         if (slot != null) {
-            this.parent.insertElement(slot.element.type);
+            this.screen.insertElement(slot.element.type);
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
