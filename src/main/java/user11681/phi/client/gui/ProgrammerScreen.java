@@ -181,17 +181,6 @@ public class ProgrammerScreen extends Screen {
                     this.search(false);
 
                     return true;
-
-                case GLFW.GLFW_KEY_TAB:
-                    if (this.search.keyPressed(keyCode, scanCode, modifiers)) {
-                        return true;
-                    }
-            }
-        } else {
-            if (keyCode == GLFW.GLFW_KEY_DELETE) {
-                this.currentSlot().element = null;
-
-                return true;
             }
         }
 
@@ -201,6 +190,12 @@ public class ProgrammerScreen extends Screen {
 
         if (this.buttons.contains(this.search)) {
             return false;
+        }
+
+        if (keyCode == GLFW.GLFW_KEY_DELETE) {
+            this.currentSlot().element = null;
+
+            return true;
         }
 
         switch (keyCode) {
