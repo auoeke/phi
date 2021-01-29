@@ -1,4 +1,4 @@
-package user11681.phi.program.piece.type;
+package user11681.phi.program.element.type;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,7 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import user11681.phi.Phi;
 import user11681.phi.client.PhiClient;
-import user11681.phi.program.piece.Element;
+import user11681.phi.program.element.Element;
 
 public abstract class TexturedElementType implements ElementType {
     @Environment(EnvType.CLIENT)

@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
 import user11681.phi.client.PhiClient;
-import user11681.phi.program.piece.Program;
+import user11681.phi.program.Program;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
@@ -43,7 +43,7 @@ public class ProgrammerScreen extends Screen {
 
         this.program = program;
 
-        this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = this.program.get(x, y));
+        this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = this.program.elements.get(x, y));
     }
 
     @Override
@@ -244,11 +244,9 @@ public class ProgrammerScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        ElementSlot slot = this.slot(mouseX, mouseY);
+        Point point = this.slots.find(this.slot(mouseX, mouseY));
 
-        if (slot != null) {
-            Point point = this.slots.find(slot);
-
+        if (point != null) {
             this.x = point.x;
             this.y = point.y;
 

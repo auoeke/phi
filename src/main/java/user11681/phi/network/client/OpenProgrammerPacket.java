@@ -6,9 +6,8 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 import user11681.phi.client.PhiLocalization;
 import user11681.phi.client.gui.ProgrammerScreen;
-import user11681.phi.program.piece.Program;
+import user11681.phi.program.Program;
 
-@SuppressWarnings("ConstantConditions")
 public class OpenProgrammerPacket extends AbstractClientPacket {
     public static final OpenProgrammerPacket instance = new OpenProgrammerPacket("open_programmer");
 
@@ -18,6 +17,6 @@ public class OpenProgrammerPacket extends AbstractClientPacket {
 
     @Override
     public void receive(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buffer, PacketSender responseSender) {
-        client.openScreen(new ProgrammerScreen(PhiLocalization.screen, Program.fromTag(buffer.readCompoundTag())));
+        client.openScreen(new ProgrammerScreen(PhiLocalization.screen, new Program(buffer.readCompoundTag())));
     }
 }

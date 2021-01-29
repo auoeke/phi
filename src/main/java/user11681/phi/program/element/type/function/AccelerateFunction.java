@@ -1,13 +1,13 @@
-package user11681.phi.program.piece.type.function;
+package user11681.phi.program.element.type.function;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
-import user11681.phi.program.piece.Element;
-import user11681.phi.program.piece.Input;
-import user11681.phi.program.piece.type.TexturedElementType;
+import user11681.phi.program.element.Element;
+import user11681.phi.program.element.Input;
+import user11681.phi.program.element.type.TexturedElementType;
 
 public class AccelerateFunction extends TexturedElementType implements FunctionElementType {
     public AccelerateFunction(Identifier texture) {

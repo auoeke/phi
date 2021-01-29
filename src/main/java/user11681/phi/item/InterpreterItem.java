@@ -10,7 +10,7 @@ import user11681.phi.component.DriveComponent;
 import user11681.phi.component.PhiComponent;
 import user11681.phi.component.InterpreterComponent;
 import user11681.phi.component.PhiComponents;
-import user11681.phi.program.piece.Program;
+import user11681.phi.program.Program;
 
 public class InterpreterItem extends Item {
     public InterpreterItem(Settings settings) {

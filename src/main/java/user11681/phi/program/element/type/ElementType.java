@@ -1,4 +1,4 @@
-package user11681.phi.program.piece.type;
+package user11681.phi.program.element.type;
 
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -15,11 +15,11 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import user11681.phi.Phi;
-import user11681.phi.program.piece.Element;
-import user11681.phi.program.piece.type.function.AccelerateFunction;
-import user11681.phi.program.piece.type.function.BlinkFunction;
-import user11681.phi.program.piece.type.parameter.AttackerParameter;
-import user11681.phi.program.piece.type.parameter.ExecutorParameter;
+import user11681.phi.program.element.Element;
+import user11681.phi.program.element.type.function.AccelerateFunction;
+import user11681.phi.program.element.type.function.BlinkFunction;
+import user11681.phi.program.element.type.parameter.AttackerParameter;
+import user11681.phi.program.element.type.parameter.ExecutorParameter;
 
 public interface ElementType {
     Registry<ElementType> registry = new SimpleRegistry<>(RegistryKey.ofRegistry(Phi.id("pieces")), Lifecycle.stable());

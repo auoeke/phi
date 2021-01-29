@@ -8,8 +8,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import user11681.phi.Phi;
 import user11681.phi.client.PhiClient;
-import user11681.phi.program.piece.Element;
-import user11681.phi.program.piece.type.ElementType;
+import user11681.phi.program.element.Element;
+import user11681.phi.program.element.type.ElementType;
 
 @Environment(EnvType.CLIENT)
 public class ElementSlot {

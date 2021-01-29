@@ -1,8 +1,8 @@
-package user11681.phi.program.piece;
+package user11681.phi.program.element;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import user11681.phi.program.piece.type.ElementType;
+import user11681.phi.program.element.type.ElementType;
 
 @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "ConstantConditions"})
 public class Element implements Cloneable {
@@ -53,7 +53,7 @@ public class Element implements Cloneable {
     }
 
     @Override
-    protected Element clone() {
+    public Element clone() {
         try {
             return (Element) super.clone();
         } catch (CloneNotSupportedException exception) {

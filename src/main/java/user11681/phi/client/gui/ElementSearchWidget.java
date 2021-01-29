@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
 import user11681.phi.client.PhiClient;
-import user11681.phi.program.piece.type.ElementType;
+import user11681.phi.program.element.type.ElementType;
 
 public class ElementSearchWidget extends TextFieldWidget {
     public static final int WIDTH = 89;
