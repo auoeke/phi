@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -36,7 +35,7 @@ public class ProgrammerBlock extends BlockWithEntity {
         super.onUse(state, world, pos, player, hand, hit);
 
         if (!world.isClient) {
-            OpenProgrammerPacket.instance.send(player, PacketByteBufs.create().writeCompoundTag(entity(world, pos).toTag(new CompoundTag())));
+            OpenProgrammerPacket.instance.send(player, PacketByteBufs.create().writeBlockPos(pos).writeCompoundTag(entity(world, pos).program.toTag()));
 
             return ActionResult.SUCCESS;
         }

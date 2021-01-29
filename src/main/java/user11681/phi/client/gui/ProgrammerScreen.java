@@ -2,15 +2,18 @@ package user11681.phi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
 import user11681.phi.client.PhiClient;
+import user11681.phi.network.server.InsertElementPacket;
 import user11681.phi.program.Program;
+import user11681.phi.program.element.type.ElementType;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
@@ -22,6 +25,7 @@ public class ProgrammerScreen extends Screen {
     private static final int HEIGHT = 176;
 
     private final ElementGrid slots = new ElementGrid();
+    private final BlockPos position;
 
     private ElementSearchWidget search;
     private Program program;
@@ -38,9 +42,10 @@ public class ProgrammerScreen extends Screen {
     private int frameX;
     private int frameY;
 
-    public ProgrammerScreen(Text title, Program program) {
+    public ProgrammerScreen(Text title, BlockPos position, Program program) {
         super(title);
 
+        this.position = position;
         this.program = program;
 
         this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = this.program.elements.get(x, y));
@@ -63,7 +68,7 @@ public class ProgrammerScreen extends Screen {
 
         this.computeFrame();
 
-        this.search = new ElementSearchWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
+        this.search = new ElementSearchWidget(this.textRenderer, this, 0, 0, 64, 10);
 
         this.slots.forEach((int x, int y, ElementSlot slot) -> {
             slot.x = this.backgroundX + 8 + 18 * x;
@@ -82,7 +87,7 @@ public class ProgrammerScreen extends Screen {
             element.render(matrixes);
         }
 
-        ElementSlot hovered = this.slot(mouseX, mouseY);
+        ElementSlot hovered = this.slots.slot(mouseX, mouseY);
 
         this.renderFrame(matrixes, hovered);
 
@@ -95,69 +100,6 @@ public class ProgrammerScreen extends Screen {
         } else {
             if (!hasControlDown() || this.renderTooltip(this.currentSlot(), matrixes)) {
                 this.renderTooltip(hovered, matrixes, mouseX, mouseY);
-            }
-        }
-    }
-
-    private void computeFrame() {
-        this.frameX = this.gridX + this.x * 18;
-        this.frameY = this.gridY + this.y * 18;
-    }
-
-    private ElementSlot slot(double x, double y) {
-        for (ElementSlot slot : this.slots) {
-            if (x >= slot.x && x <= slot.x + 16 && y >= slot.y && y <= slot.y + 16) {
-                return slot;
-            }
-        }
-
-        return null;
-    }
-
-    private ElementSlot currentSlot() {
-        return this.slots.get(this.x, this.y);
-    }
-
-    private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
-        if (hovered != null) {
-            PhiClient.textureManager.bindTexture(hoverFrame);
-            drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 16, 16, 16, 16);
-        }
-
-        PhiClient.textureManager.bindTexture(focusFrame);
-        drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
-    }
-
-    private boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {
-        if (slot != null && slot.element != null) {
-            this.renderTooltip(matrixes, slot.element.type.tooltip(), slot.x, slot.y + 24);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private void renderTooltip(ElementSlot slot, MatrixStack matrixes, int x, int y) {
-        if (slot != null && slot.element != null) {
-            this.renderTooltip(matrixes, slot.element.type.tooltip(), x, y);
-        }
-    }
-
-    private void search(boolean active) {
-        if (active) {
-            this.search.init(Math.min(this.frameX + 17, this.width - ElementSearchWidget.WIDTH), Math.min(this.frameY - 1, this.height - ElementSearchWidget.HEIGHT));
-
-            this.addButton(this.search);
-            this.focusOn(this.search);
-            this.search.setSelected(true);
-        } else {
-            this.search.deinit();
-            this.buttons.remove(this.search);
-            this.children.remove(this.search);
-
-            if (this.getFocused() == this.search) {
-                this.setFocused(null);
             }
         }
     }
@@ -176,9 +118,13 @@ public class ProgrammerScreen extends Screen {
                         break;
                     }
 
-                    this.currentSlot().element = this.search.focused.element.type.defaultElement();
-
+                    this.insertElement();
                     this.search(false);
+
+                    return true;
+
+                case GLFW.GLFW_KEY_TAB:
+                    this.search.keyPressed(keyCode, scanCode, modifiers);
 
                     return true;
             }
@@ -239,7 +185,7 @@ public class ProgrammerScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Point point = this.slots.find(this.slot(mouseX, mouseY));
+        Point point = this.slots.find(this.slots.slot(mouseX, mouseY));
 
         if (point != null) {
             this.x = point.x;
@@ -255,5 +201,72 @@ public class ProgrammerScreen extends Screen {
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private boolean seaarch() {
+        return this.getFocused() == this.search;
+    }
+
+    private ElementSlot currentSlot() {
+        return this.slots.get(this.x, this.y);
+    }
+
+    private void computeFrame() {
+        this.frameX = this.gridX + this.x * 18;
+        this.frameY = this.gridY + this.y * 18;
+    }
+
+    private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
+        if (hovered != null) {
+            PhiClient.textureManager.bindTexture(hoverFrame);
+            drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 16, 16, 16, 16);
+        }
+
+        PhiClient.textureManager.bindTexture(focusFrame);
+        drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
+    }
+
+    private boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {
+        if (slot != null && slot.element != null) {
+            this.renderTooltip(matrixes, slot.element.type.tooltip(), slot.x, slot.y + 24);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private void renderTooltip(ElementSlot slot, MatrixStack matrixes, int x, int y) {
+        if (slot != null && slot.element != null) {
+            this.renderTooltip(matrixes, slot.element.type.tooltip(), x, y);
+        }
+    }
+
+    private void search(boolean active) {
+        if (active) {
+            this.search.init(Math.min(this.frameX + 17, this.width - ElementSearchWidget.WIDTH), Math.min(this.frameY - 1, this.height - ElementSearchWidget.HEIGHT));
+
+            this.addButton(this.search);
+            this.focusOn(this.search);
+            this.search.setSelected(true);
+        } else {
+            this.search.deinit();
+            this.buttons.remove(this.search);
+            this.children.remove(this.search);
+
+            if (this.getFocused() == this.search) {
+                this.setFocused(null);
+            }
+        }
+    }
+
+    public void insertElement(ElementType type) {
+        InsertElementPacket.instance.send(PacketByteBufs.create().writeBlockPos(this.position).writeVarInt(this.x + this.y * Program.SIZE).writeIdentifier(type.id()));
+
+        this.currentSlot().element = type.defaultElement();
+    }
+
+    private void insertElement() {
+        this.insertElement(this.search.focused.element.type);
     }
 }

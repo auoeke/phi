@@ -25,7 +25,7 @@ public class Program implements Cloneable {
 
         tag.put("elements", elements);
 
-        this.elements.forEach((int x, int y, Element element) -> elements.add(element.toTag()));
+        this.elements.forEach((int x, int y, Element element) -> elements.add(element == null ? new CompoundTag() : element.toTag()));
 
         return tag;
     }

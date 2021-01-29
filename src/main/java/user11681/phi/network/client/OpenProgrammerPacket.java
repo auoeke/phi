@@ -16,7 +16,7 @@ public class OpenProgrammerPacket extends AbstractClientPacket {
     }
 
     @Override
-    public void receive(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buffer, PacketSender responseSender) {
-        client.openScreen(new ProgrammerScreen(PhiLocalization.screen, new Program(buffer.readCompoundTag())));
+    public void execute(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buffer, PacketSender sender) {
+        client.openScreen(new ProgrammerScreen(PhiLocalization.screen, buffer.readBlockPos(), new Program(buffer.readCompoundTag())));
     }
 }

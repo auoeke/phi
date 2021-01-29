@@ -19,7 +19,7 @@ public class ProgramGrid<T> implements Iterable<T> {
     }
 
     public T get(int x, int y) {
-        return this.elements.get(x + 9 * y);
+        return this.elements.get(x + Program.SIZE * y);
     }
 
     public void set(int i, T element) {
@@ -27,7 +27,7 @@ public class ProgramGrid<T> implements Iterable<T> {
     }
 
     public void set(int x, int y, T element) {
-        this.elements.set(x + 9 * y, element);
+        this.elements.set(x + Program.SIZE * y, element);
     }
 
     public Point find(T element) {

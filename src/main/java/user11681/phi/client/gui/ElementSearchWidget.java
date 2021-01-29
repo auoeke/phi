@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
@@ -22,6 +22,8 @@ public class ElementSearchWidget extends TextFieldWidget {
 
     private static final Identifier search = Phi.id("textures/gui/search.png");
 
+    private final ProgrammerScreen parent;
+
     public ElementSlot hovered;
     public ElementSlot focused;
 
@@ -30,8 +32,10 @@ public class ElementSearchWidget extends TextFieldWidget {
     public int backgroundX;
     public int backgroundY;
 
-    public ElementSearchWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
-        super(textRenderer, x, y, width, height, text);
+    public ElementSearchWidget(TextRenderer textRenderer, ProgrammerScreen parent, int x, int y, int width, int height) {
+        super(textRenderer, x, y, width, height, LiteralText.EMPTY);
+
+        this.parent = parent;
 
         this.setHasBorder(false);
     }
@@ -94,6 +98,17 @@ public class ElementSearchWidget extends TextFieldWidget {
         return false;
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        ElementSlot slot = this.slot(mouseX, mouseY);
+
+        if (slot != null) {
+            this.parent.insertElement(slot.element.type);
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
     public void init(int backgroundX, int backgroundY) {
         this.backgroundX = backgroundX;
         this.backgroundY = backgroundY;
@@ -146,5 +161,15 @@ public class ElementSearchWidget extends TextFieldWidget {
                 this.focused.focused = true;
             }
         }
+    }
+
+    private ElementSlot slot(double x, double y) {
+        for (ElementSlot slot : this.slots) {
+            if (x >= slot.x && x <= slot.x + 16 && y >= slot.y && y <= slot.y + 16) {
+                return slot;
+            }
+        }
+
+        return null;
     }
 }

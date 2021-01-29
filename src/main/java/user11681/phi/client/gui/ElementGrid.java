@@ -8,4 +8,14 @@ public class ElementGrid extends ProgramGrid<ElementSlot> {
             this.elements.set(i, new ElementSlot());
         }
     }
+
+    public ElementSlot slot(double x, double y) {
+        for (ElementSlot slot : this) {
+            if (x >= slot.x && x <= slot.x + 16 && y >= slot.y && y <= slot.y + 16) {
+                return slot;
+            }
+        }
+
+        return null;
+    }
 }

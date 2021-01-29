@@ -41,6 +41,10 @@ public interface ElementType {
 
     String namespace();
 
+    default Identifier id() {
+        return registry.getId(this);
+    }
+
     default Element defaultElement() {
         return new Element(this);
     }
