@@ -10,4 +10,6 @@ dependencies {
     mod("cardinal-components-base")
     mod("cardinal-components-entity")
     mod("cardinal-components-item")
+
+    compileOnly("com.demonwav.mcdev:annotations:1.0")
 }

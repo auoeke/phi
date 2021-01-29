@@ -107,13 +107,18 @@ public class ProgrammerScreen extends Screen {
         drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
     }
 
+    private void removeSearchWidget() {
+        this.search.deinit();
+        this.buttons.remove(this.search);
+        this.children.remove(this.search);
+    }
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.buttons.contains(this.search)) {
             switch (keyCode) {
                 case GLFW.GLFW_KEY_ESCAPE:
-                    this.search.deinit();
-                    this.buttons.remove(this.search);
+                    this.removeSearchWidget();
 
                     return true;
 
@@ -123,6 +128,8 @@ public class ProgrammerScreen extends Screen {
                     }
 
                     this.elements[this.x][this.y].element = this.search.focused.element.type.defaultElement();
+
+                    this.removeSearchWidget();
 
                     break;
 
@@ -134,6 +141,8 @@ public class ProgrammerScreen extends Screen {
         } else {
             if (keyCode == GLFW.GLFW_KEY_DELETE) {
                 this.elements[this.x][this.y].element = null;
+
+                return true;
             }
         }
 

@@ -1,12 +1,10 @@
 package user11681.phi.block;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -14,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import user11681.phi.Phi;
+import user11681.phi.network.client.OpenProgrammerPacket;
 
 @SuppressWarnings("deprecation")
 public class ProgrammerBlock extends BlockWithEntity {
@@ -37,7 +35,7 @@ public class ProgrammerBlock extends BlockWithEntity {
         super.onUse(state, world, pos, player, hand, hit);
 
         if (!world.isClient) {
-            ServerPlayNetworking.send((ServerPlayerEntity) player, Phi.channel, PacketByteBufs.create().writeCompoundTag(entity(world, pos).pieces));
+            OpenProgrammerPacket.instance.send(player, PacketByteBufs.create().writeCompoundTag(entity(world, pos).elements));
 
             return ActionResult.SUCCESS;
         }

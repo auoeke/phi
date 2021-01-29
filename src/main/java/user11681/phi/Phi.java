@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -20,18 +19,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import user11681.phi.block.ProgrammerBlockEntity;
 import user11681.phi.component.DriveComponent;
-import user11681.phi.component.PhiComponent;
 import user11681.phi.component.InterpreterComponent;
+import user11681.phi.component.PhiComponent;
 import user11681.phi.component.PhiComponents;
 import user11681.phi.item.DriveItem;
 import user11681.phi.item.PhiItems;
-import user11681.phi.network.ProgrammerScreenPacket;
+import user11681.phi.network.client.OpenProgrammerPacket;
+import user11681.phi.network.server.InsertElementPacket;
 
 @EnvironmentInterface(value = EnvType.CLIENT, itf = ClientModInitializer.class)
 public class Phi implements ModInitializer, ClientModInitializer, EntityComponentInitializer, ItemComponentInitializer {
     public static final String ID = "phi";
-
-    public static final Identifier channel = id(ID);
 
     public static final ItemGroup itemGroup = FabricItemGroupBuilder
         .create(id(ID))
@@ -54,12 +52,14 @@ public class Phi implements ModInitializer, ClientModInitializer, EntityComponen
 
         Registry.register(Registry.BLOCK_ENTITY_TYPE, id("programmer"), ProgrammerBlockEntity.type);
 
-        ClientPlayNetworking.registerGlobalReceiver(channel, new ProgrammerScreenPacket());
+        InsertElementPacket.instance.register();
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void onInitializeClient() {}
+    public void onInitializeClient() {
+        OpenProgrammerPacket.instance.register();
+    }
 
     @Override
     public void registerItemComponentFactories(ItemComponentFactoryRegistry registry) {

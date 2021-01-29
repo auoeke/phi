@@ -135,8 +135,10 @@ public class ElementSearchWidget extends TextFieldWidget {
             this.slots = newSlots;
 
             if (newSlots.isEmpty()) {
-                this.focused.focused = false;
-                this.focused = null;
+                if (this.focused != null) {
+                    this.focused.focused = false;
+                    this.focused = null;
+                }
             } else {
                 this.focused = this.slots.get(0);
                 this.focused.focused = true;

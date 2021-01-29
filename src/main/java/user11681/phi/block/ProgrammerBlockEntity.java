@@ -11,7 +11,7 @@ import user11681.phi.Phi;
 public class ProgrammerBlockEntity extends BlockEntity {
     public static final BlockEntityType<ProgrammerBlockEntity> type = FabricBlockEntityTypeBuilder.create(ProgrammerBlockEntity::new, PhiBlocks.programmer).build();
 
-    protected CompoundTag pieces = new CompoundTag();
+    protected CompoundTag elements = new CompoundTag();
 
     public ProgrammerBlockEntity(BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -21,16 +21,16 @@ public class ProgrammerBlockEntity extends BlockEntity {
     public void fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
-        CompoundTag pieces = tag.getCompound(Phi.ID);
+        CompoundTag elements = tag.getCompound(Phi.ID);
 
-        if (pieces != null) {
-            this.pieces = pieces;
+        if (elements != null) {
+            this.elements = elements;
         }
     }
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag).put(Phi.ID, this.pieces);
+        super.toTag(tag).put(Phi.ID, this.elements);
 
         return tag;
     }
