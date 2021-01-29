@@ -109,6 +109,8 @@ public class ElementSearchWidget extends TextFieldWidget {
     public void deinit() {
         this.hovered = null;
         this.focused = null;
+
+        this.setText("");
     }
 
     private void computeElements() {
@@ -119,7 +121,7 @@ public class ElementSearchWidget extends TextFieldWidget {
 
         for (ElementType type : ElementType.registry) {
             if (type.name().getString().contains(searchText)) {
-                newSlots.add(new ElementSlot(type, this.backgroundX + BORDER_PADDING + (16 + PADDING) * order, this.backgroundY + 10 * (2 + order / ROW_LENGTH)));
+                newSlots.add(new ElementSlot().element(type).position(this.backgroundX + BORDER_PADDING + (16 + PADDING) * order, this.backgroundY + 10 * (2 + order / ROW_LENGTH)));
 
                 ++order;
             }

@@ -15,12 +15,13 @@ import user11681.phi.program.piece.Program;
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
     private static final Identifier background = Phi.id("textures/gui/programmer.png");
-    private static final Identifier frame = Phi.id("textures/gui/frame.png");
+    private static final Identifier focusFrame = Phi.id("textures/gui/focus_frame.png");
+    private static final Identifier hoverFrame = Phi.id("textures/gui/hover_frame.png");
 
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
 
-    private final ElementSlot[][] elements = new ElementSlot[Program.SIZE][Program.SIZE];
+    private final ElementGrid slots = new ElementGrid();
 
     private ElementSearchWidget search;
     private Program program;
@@ -41,6 +42,8 @@ public class ProgrammerScreen extends Screen {
         super(title);
 
         this.program = program;
+
+        this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = this.program.get(x, y));
     }
 
     @Override
@@ -58,13 +61,14 @@ public class ProgrammerScreen extends Screen {
         this.gridX = this.backgroundX + 8;
         this.gridY = this.backgroundY + 8;
 
+        this.computeFrame();
+
         this.search = new ElementSearchWidget(this.textRenderer, 0, 0, 64, 10, LiteralText.EMPTY);
 
-        for (int i = 0, length = this.elements.length; i < length; i++) {
-            for (int j = 0; j < this.elements[i].length; j++) {
-                this.elements[i][j] = new ElementSlot(this.program.get(i, j), this.backgroundX + 8 + 18 * i, this.backgroundY + 8 + 18 * j);
-            }
-        }
+        this.slots.forEach((int x, int y, ElementSlot slot) -> {
+            slot.x = this.backgroundX + 8 + 18 * x;
+            slot.y = this.backgroundY + 8 + 18 * y;
+        });
     }
 
     @Override
@@ -74,43 +78,88 @@ public class ProgrammerScreen extends Screen {
         PhiClient.textureManager.bindTexture(background);
         drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT);
 
-        this.frameX = this.gridX + this.x * 18;
-        this.frameY = this.gridY + this.y * 18;
-
-        for (ElementSlot[] row : this.elements) {
-            for (ElementSlot element : row) {
-                element.render(matrixes);
-            }
+        for (ElementSlot element : this.slots) {
+            element.render(matrixes);
         }
 
-        this.renderFrame(matrixes);
+        ElementSlot hovered = this.slot(mouseX, mouseY);
+
+        this.renderFrame(matrixes, hovered);
 
         super.render(matrixes, mouseX, mouseY, delta);
 
-        if (this.search != null) {
-            ElementSlot selected = this.search.focused;
-
-            if (selected != null && hasControlDown()) {
-                this.renderTooltip(matrixes, selected.element.type.tooltip(), selected.x, selected.y + 24);
-            } else {
-                selected = this.search.hovered;
-
-                if (selected != null) {
-                    this.renderTooltip(matrixes, selected.element.type.tooltip(), mouseX, mouseY);
-                }
+        if (this.buttons.contains(this.search)) {
+            if (!hasControlDown() || this.renderTooltip(this.search.focused, matrixes)) {
+                this.renderTooltip(this.search.hovered, matrixes, mouseX, mouseY);
+            }
+        } else {
+            if (!hasControlDown() || this.renderTooltip(this.currentSlot(), matrixes)) {
+                this.renderTooltip(hovered, matrixes, mouseX, mouseY);
             }
         }
     }
 
-    private void renderFrame(MatrixStack matrixes) {
-        PhiClient.textureManager.bindTexture(frame);
+    private void computeFrame() {
+        this.frameX = this.gridX + this.x * 18;
+        this.frameY = this.gridY + this.y * 18;
+    }
+
+    private ElementSlot slot(double x, double y) {
+        for (ElementSlot slot : this.slots) {
+            if (x >= slot.x && x <= slot.x + 16 && y >= slot.y && y <= slot.y + 16) {
+                return slot;
+            }
+        }
+
+        return null;
+    }
+
+    private ElementSlot currentSlot() {
+        return this.slots.get(this.x, this.y);
+    }
+
+    private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
+        if (hovered != null) {
+            PhiClient.textureManager.bindTexture(hoverFrame);
+            drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 16, 16, 16, 16);
+        }
+
+        PhiClient.textureManager.bindTexture(focusFrame);
         drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
     }
 
-    private void removeSearchWidget() {
-        this.search.deinit();
-        this.buttons.remove(this.search);
-        this.children.remove(this.search);
+    private boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {
+        if (slot != null && slot.element != null) {
+            this.renderTooltip(matrixes, slot.element.type.tooltip(), slot.x, slot.y + 24);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private void renderTooltip(ElementSlot slot, MatrixStack matrixes, int x, int y) {
+        if (slot != null && slot.element != null) {
+            this.renderTooltip(matrixes, slot.element.type.tooltip(), x, y);
+        }
+    }
+
+    private void search(boolean active) {
+        if (active) {
+            this.search.init(Math.min(this.frameX + 17, this.width - ElementSearchWidget.WIDTH), Math.min(this.frameY - 1, this.height - ElementSearchWidget.HEIGHT));
+
+            this.addButton(this.search);
+            this.focusOn(this.search);
+            this.search.setSelected(true);
+        } else {
+            this.search.deinit();
+            this.buttons.remove(this.search);
+            this.children.remove(this.search);
+
+            if (this.getFocused() == this.search) {
+                this.setFocused(null);
+            }
+        }
     }
 
     @Override
@@ -118,7 +167,7 @@ public class ProgrammerScreen extends Screen {
         if (this.buttons.contains(this.search)) {
             switch (keyCode) {
                 case GLFW.GLFW_KEY_ESCAPE:
-                    this.removeSearchWidget();
+                    this.search(false);
 
                     return true;
 
@@ -127,11 +176,11 @@ public class ProgrammerScreen extends Screen {
                         break;
                     }
 
-                    this.elements[this.x][this.y].element = this.search.focused.element.type.defaultElement();
+                    this.currentSlot().element = this.search.focused.element.type.defaultElement();
 
-                    this.removeSearchWidget();
+                    this.search(false);
 
-                    break;
+                    return true;
 
                 case GLFW.GLFW_KEY_TAB:
                     if (this.search.keyPressed(keyCode, scanCode, modifiers)) {
@@ -140,7 +189,7 @@ public class ProgrammerScreen extends Screen {
             }
         } else {
             if (keyCode == GLFW.GLFW_KEY_DELETE) {
-                this.elements[this.x][this.y].element = null;
+                this.currentSlot().element = null;
 
                 return true;
             }
@@ -155,20 +204,20 @@ public class ProgrammerScreen extends Screen {
         }
 
         switch (keyCode) {
-            case GLFW.GLFW_KEY_LEFT:
-            case GLFW.GLFW_KEY_A:
-                this.x = (this.x + Program.SIZE - 1) % Program.SIZE;
-
-                break;
-
             case GLFW.GLFW_KEY_RIGHT:
             case GLFW.GLFW_KEY_D:
                 this.x = (this.x + 1) % Program.SIZE;
 
                 break;
 
-            case GLFW.GLFW_KEY_S:
+            case GLFW.GLFW_KEY_LEFT:
+            case GLFW.GLFW_KEY_A:
+                this.x = (this.x + Program.SIZE - 1) % Program.SIZE;
+
+                break;
+
             case GLFW.GLFW_KEY_DOWN:
+            case GLFW.GLFW_KEY_S:
                 this.y = (this.y + 1) % Program.SIZE;
 
                 break;
@@ -180,11 +229,7 @@ public class ProgrammerScreen extends Screen {
                 break;
 
             case GLFW.GLFW_KEY_ENTER:
-                this.search.init(Math.min(this.frameX + 17, this.width - ElementSearchWidget.WIDTH), Math.min(this.frameY - 1, this.height - ElementSearchWidget.HEIGHT));
-
-                this.addButton(this.search);
-                this.focusOn(this.search);
-                this.search.setSelected(true);
+                this.search(true);
 
                 break;
 
@@ -192,6 +237,30 @@ public class ProgrammerScreen extends Screen {
                 return false;
         }
 
+        this.computeFrame();
+
         return true;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        ElementSlot slot = this.slot(mouseX, mouseY);
+
+        if (slot != null) {
+            Point point = this.slots.find(slot);
+
+            this.x = point.x;
+            this.y = point.y;
+
+            this.computeFrame();
+
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                this.search(true);
+            }
+
+            return true;
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 }

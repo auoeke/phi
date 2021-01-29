@@ -15,21 +15,30 @@ import user11681.phi.program.piece.type.ElementType;
 public class ElementSlot {
     private static final Identifier focusedBorder = Phi.id("textures/gui/focused_slot.png");
 
-    public final int x;
-    public final int y;
+    public Element element;
+
+    public int x;
+    public int y;
 
     public boolean focused;
 
-    public Element element;
+    public ElementSlot element(ElementType element) {
+        this.element = element.defaultElement();
 
-    public ElementSlot(ElementType element, int x, int y) {
-        this(element.defaultElement(), x, y);
+        return this;
     }
 
-    public ElementSlot(Element element, int x, int y) {
+    public ElementSlot element(Element element) {
         this.element = element;
+
+        return this;
+    }
+
+    public ElementSlot position(int x, int y) {
         this.x = x;
         this.y = y;
+
+        return this;
     }
 
     @Override
