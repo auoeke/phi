@@ -1,4 +1,4 @@
-package user11681.phi.client.gui;
+package user11681.phi.util;
 
 public class Point {
     public final int x;

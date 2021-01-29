@@ -15,6 +15,7 @@ import user11681.phi.client.PhiClient;
 import user11681.phi.network.server.InsertElementPacket;
 import user11681.phi.program.Program;
 import user11681.phi.program.element.type.ElementType;
+import user11681.phi.util.Point;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
@@ -190,16 +191,13 @@ public class ProgrammerScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Point point = this.slots.find(this.slots.slot(mouseX, mouseY));
-
-        int x = this.search.backgroundX;
-        int y = this.search.backgroundY;
-
-        if (this.search() && mouseX >= x && mouseX <= x + ElementSearchWidget.WIDTH && mouseY >= y && mouseY <= y + ElementSearchWidget.HEIGHT) {
+        if (button != GLFW.GLFW_MOUSE_BUTTON_RIGHT && this.search() && ScreenUtil.inside(mouseX, mouseY, this.search.backgroundX, this.search.backgroundY, ElementSearchWidget.WIDTH, ElementSearchWidget.HEIGHT)) {
             return this.search.mouseClicked(mouseX, mouseY, button);
         }
 
         this.search(false);
+
+        Point point = this.slots.find(this.slots.slot(mouseX, mouseY));
 
         if (point != null) {
             this.x = point.x;
@@ -231,13 +229,19 @@ public class ProgrammerScreen extends Screen {
     }
 
     private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
-        if (hovered != null) {
-            PhiClient.textureManager.bindTexture(hoverFrame);
-            drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 16, 16, 16, 16);
-        }
-
         PhiClient.textureManager.bindTexture(focusFrame);
         drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
+
+        if (hovered != null) {
+            PhiClient.textureManager.bindTexture(hoverFrame);
+
+            if (this.frameX == hovered.x && this.frameY == hovered.y) {
+                drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 8, 8, 16, 16);
+                drawTexture(matrixes, hovered.x + 8, hovered.y + 8, 8, 8, 8, 8, 16, 16);
+            } else {
+                drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 16, 16, 16, 16);
+            }
+        }
     }
 
     private boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {

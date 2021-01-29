@@ -24,8 +24,8 @@ public class ElementSearchWidget extends TextFieldWidget {
 
     private final ProgrammerScreen parent;
 
-    public ElementSlot hovered;
     public ElementSlot focused;
+    public ElementSlot hovered;
 
     private ReferenceArrayList<ElementSlot> slots = new ReferenceArrayList<>();
 
@@ -136,7 +136,7 @@ public class ElementSearchWidget extends TextFieldWidget {
 
         for (ElementType type : ElementType.registry) {
             if (type.name().getString().contains(searchText)) {
-                newSlots.add(new ElementSlot().element(type).position(this.backgroundX + BORDER_PADDING + (16 + PADDING) * order, this.backgroundY + 10 * (2 + order / ROW_LENGTH)));
+                newSlots.add(new ElementSlot().element(type).position(this.backgroundX + BORDER_PADDING + (16 + PADDING) * (order % ROW_LENGTH), this.backgroundY + 20 + 18 * (order / ROW_LENGTH)));
 
                 ++order;
             }

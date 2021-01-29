@@ -18,6 +18,8 @@ import user11681.phi.Phi;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.function.AccelerateFunction;
 import user11681.phi.program.element.type.function.BlinkFunction;
+import user11681.phi.program.element.type.operator.MultiplyOperator;
+import user11681.phi.program.element.type.operator.RotationOperator;
 import user11681.phi.program.element.type.parameter.AttackerParameter;
 import user11681.phi.program.element.type.parameter.ExecutorParameter;
 
@@ -29,6 +31,9 @@ public interface ElementType {
 
     ElementType attacker = register(Phi.id("attacker"), new AttackerParameter(Phi.id("textures/element/parameter/attacker.png")));
     ElementType executor = register(Phi.id("executor"), new ExecutorParameter(Phi.id("textures/element/parameter/executor.png")));
+
+    ElementType multiply = register(Phi.id("multiply"), new MultiplyOperator(Phi.id("textures/element/operator/multiply.png")));
+    ElementType rotation = register(Phi.id("rotation"), new RotationOperator(Phi.id("textures/element/operator/rotation.png")));
 
     static <T extends ElementType> T register(Identifier identifier, T element) {
         return Registry.register(registry, identifier, element);

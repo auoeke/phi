@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import org.jetbrains.annotations.NotNull;
-import user11681.phi.client.gui.Point;
 import user11681.phi.program.Program;
 
 @SuppressWarnings("unchecked")
