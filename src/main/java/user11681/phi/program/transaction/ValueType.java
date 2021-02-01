@@ -4,8 +4,6 @@ import net.minecraft.text.Text;
 import user11681.phi.client.Localization;
 
 public interface ValueType {
-    ValueType none = () -> Localization.noneType;
-
     ValueType entity = () -> Localization.entityType;
     ValueType number = () -> Localization.numberType;
     ValueType vector = () -> Localization.vectorType;
