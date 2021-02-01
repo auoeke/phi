@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
-import user11681.phi.client.Localization;
+import user11681.phi.Localization;
 import user11681.phi.client.gui.ProgrammerScreen;
 import user11681.phi.program.Program;
 

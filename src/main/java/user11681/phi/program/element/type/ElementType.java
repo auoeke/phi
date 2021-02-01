@@ -13,8 +13,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
+import user11681.phi.Localization;
 import user11681.phi.Phi;
-import user11681.phi.client.Localization;
+import user11681.phi.client.gui.ScreenUtil;
+import user11681.phi.client.gui.Textures;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.group.ElementGroup;
 import user11681.phi.program.element.type.constant.EulerConstant;
@@ -51,12 +53,14 @@ public interface ElementType {
         return Registry.register(registry, identifier, element);
     }
 
-    @Environment(EnvType.CLIENT)
-    void render(Element element, MatrixStack matrixes, int x, int y);
-
     int cost(Element element);
 
     ElementGroup group();
+
+    @Environment(EnvType.CLIENT)
+    default void render(Element element, MatrixStack matrixes, int x, int y) {
+        ScreenUtil.drawTexture(Textures.elementBase, matrixes, x, y, 16, 16);
+    }
 
     default Identifier id() {
         return registry.getId(this);
@@ -71,6 +75,7 @@ public interface ElementType {
         return new ObjectArrayList<>(new Text[]{this.name()});
     }
 
+    @Environment(EnvType.CLIENT)
     default Text name() {
         return new LiteralText(String.format("%s: %s", this.group().name.getString(), new TranslatableText(Localization.typeKey(this)).getString()));
     }

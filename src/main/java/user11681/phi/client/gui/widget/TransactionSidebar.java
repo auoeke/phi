@@ -23,6 +23,7 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
     private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
     private final ProgrammerScreen screen;
+
     private final int x;
     private final int y;
 
@@ -66,7 +67,7 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
             for (int j = 0; j != 4; j++) {
                 matrixes.push();
                 matrixes.translate(arrowX + 3, arrowY + 3, 0);
-                matrixes.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion((float) (Math.PI / 2 * j)));
+                matrixes.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90 * j));
 
                 drawTexture(matrixes, -16 * (j / 2), -16 * ((j + 1 & 2) >> 1), 0, 0, 16, 16, 16, 16);
 

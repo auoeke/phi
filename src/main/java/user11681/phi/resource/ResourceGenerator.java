@@ -8,7 +8,7 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.text.TranslatableText;
 import user11681.phi.Phi;
-import user11681.phi.client.Localization;
+import user11681.phi.Localization;
 import user11681.phi.program.element.group.ElementGroup;
 import user11681.phi.program.element.type.ElementType;
 import user11681.phi.program.type.SimpleType;

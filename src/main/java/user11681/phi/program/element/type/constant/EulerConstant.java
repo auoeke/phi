@@ -9,7 +9,9 @@ import user11681.phi.program.type.Variable;
 public class EulerConstant implements ConstantElementType {
     @Override
     public void render(Element element, MatrixStack matrixes, int x, int y) {
-        ScreenUtil.textRenderer.drawWithShadow(matrixes, "e", x, y, 0xFFFFFFFF);
+        ConstantElementType.super.render(element, matrixes, x, y);
+
+        ScreenUtil.drawCenteredText(matrixes, "e", x + 8, y + 8, 0xFFFFFFFF);
     }
 
     @Override

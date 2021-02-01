@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
-import user11681.phi.client.Localization;
+import user11681.phi.Localization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
 import user11681.phi.program.type.NamedVariable;

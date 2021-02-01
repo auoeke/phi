@@ -1,4 +1,4 @@
-package user11681.phi.client;
+package user11681.phi;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,11 +9,6 @@ import user11681.phi.program.element.type.ElementType;
 @Environment(EnvType.CLIENT)
 public class Localization {
     public static final TranslatableText screen = new TranslatableText("menu.phi.spell_programmer");
-
-    public static final TranslatableText entityType = new TranslatableText("phi.value_type.entity");
-    public static final TranslatableText numberType = new TranslatableText("phi.value_type.number");
-    public static final TranslatableText positionType = new TranslatableText("phi.value_type.position");
-    public static final TranslatableText vectorType = new TranslatableText("phi.value_type.vector");
 
     public static final TranslatableText directionVariable = new TranslatableText("phi.variable.direction");
     public static final TranslatableText operandVariable = new TranslatableText("phi.variable.operand");
