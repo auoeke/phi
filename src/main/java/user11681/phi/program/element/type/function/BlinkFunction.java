@@ -1,6 +1,6 @@
 package user11681.phi.program.element.type.function;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
@@ -27,7 +27,7 @@ public class BlinkFunction extends TexturedElementType implements FunctionElemen
 
     @Override
     public List<NamedVariable> input() {
-        return Collections.singletonList(Variable.named(ValueType.entity, Localization.targetVariable));
+        return Arrays.asList(Variable.named(ValueType.entity, Localization.targetVariable), Variable.named(ValueType.number, Localization.powerVariable));
     }
 
     @Override

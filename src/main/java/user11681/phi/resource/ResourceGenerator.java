@@ -41,11 +41,16 @@ public class ResourceGenerator implements ModInitializer {
         type(ElementType.attacker, "attacker");
         type(ElementType.executor, "executor");
 
-        variable(Localization.directionVariable, "Direction");
-        variable(Localization.operandVariable, "Operand");
-        variable(Localization.powerVariable, "Power");
-        variable(Localization.productVariable, "Product");
-        variable(Localization.targetVariable, "Target");
+        text(Localization.entityType, "Entity");
+        text(Localization.numberType, "Number");
+        text(Localization.positionType, "Position");
+        text(Localization.vectorType, "Vector");
+
+        text(Localization.directionVariable, "Direction");
+        text(Localization.operandVariable, "Operand");
+        text(Localization.powerVariable, "Power");
+        text(Localization.productVariable, "Product");
+        text(Localization.targetVariable, "Target");
 
         resources.addLang(Phi.id("en_us"), lang);
         lang = null;
@@ -59,7 +64,7 @@ public class ResourceGenerator implements ModInitializer {
         lang.entry(Localization.typeKey(type), name);
     }
 
-    private static void variable(TranslatableText text, String name) {
+    private static void text(TranslatableText text, String name) {
         lang.entry(text.getKey(), name);
     }
 }
