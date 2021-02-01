@@ -1,4 +1,4 @@
-package user11681.phi.program.transaction;
+package user11681.phi.program.type;
 
 import net.minecraft.text.Text;
 

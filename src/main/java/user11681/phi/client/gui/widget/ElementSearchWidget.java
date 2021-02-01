@@ -1,7 +1,8 @@
 package user11681.phi.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.Locale;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -31,7 +32,7 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
     public ElementSlot focused;
     public ElementSlot hovered;
 
-    private ReferenceArrayList<ElementSlot> slots = new ReferenceArrayList<>();
+    private ObjectArrayList<ElementSlot> slots = new ObjectArrayList<>();
 
     public int backgroundX;
     public int backgroundY;
@@ -53,19 +54,18 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
         RenderSystem.enableBlend();
 
-        ScreenUtil.bindTexture(search);
-        drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT, 128, 128);
+        ScreenUtil.drawTexture(search, matrixes, this.backgroundX, this.backgroundY, WIDTH, HEIGHT, 128, 128);
 
         super.render(matrixes, mouseX, mouseY, delta);
 
         this.hovered = null;
 
         for (ElementSlot slot : this.slots) {
-            slot.render(matrixes);
-
-            if (mouseX >= slot.x && mouseX <= slot.x + 16 && mouseY >= slot.y && mouseY <= slot.y + 16) {
+            if (this.hovered != null && ScreenUtil.inside(mouseX, mouseY, slot.x, slot.y, 16, 16)) {
                 this.hovered = slot;
             }
+
+            slot.render(matrixes);
         }
 
         if (!Screen.hasControlDown() || this.renderTooltip(this.focused, matrixes)) {
@@ -142,13 +142,13 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
     }
 
     private void computeElements() {
-        String searchText = this.getText();
+        String filter = this.getText().toLowerCase(Locale.ROOT);
         int order = 0;
 
-        ReferenceArrayList<ElementSlot> newSlots = new ReferenceArrayList<>();
+        ObjectArrayList<ElementSlot> newSlots = new ObjectArrayList<>();
 
         for (ElementType type : ElementType.registry) {
-            if (type.name().getString().contains(searchText)) {
+            if (type.name().getString().toLowerCase(Locale.ROOT).contains(filter)) {
                 newSlots.add(new ElementSlot().element(type).position(this.backgroundX + BORDER_PADDING + (16 + PADDING) * (order % ROW_LENGTH), this.backgroundY + 20 + 18 * (order / ROW_LENGTH)));
 
                 ++order;
@@ -159,20 +159,26 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
             int focusedIndex = this.slots.indexOf(this.focused);
 
             if (focusedIndex >= 0 && focusedIndex == newSlots.indexOf(this.focused)) {
-                this.focused = newSlots.get(focusedIndex);
+                this.focus(newSlots.get(focusedIndex));
+            } else if (newSlots.isEmpty()) {
+                this.focus(null);
+            } else {
+                this.focus(newSlots.get(0));
             }
 
             this.slots = newSlots;
+        }
+    }
 
-            if (newSlots.isEmpty()) {
-                if (this.focused != null) {
-                    this.focused.focused = false;
-                    this.focused = null;
-                }
-            } else {
-                this.focused = this.slots.get(0);
-                this.focused.focused = true;
-            }
+    private void focus(ElementSlot slot) {
+        if (this.focused != null) {
+            this.focused.focused = false;
+        }
+
+        this.focused = slot;
+
+        if (slot != null) {
+            slot.focused = true;
         }
     }
 

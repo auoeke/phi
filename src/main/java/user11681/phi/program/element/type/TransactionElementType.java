@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import user11681.phi.program.element.Element;
-import user11681.phi.program.transaction.NamedVariable;
+import user11681.phi.program.type.NamedVariable;
 import user11681.phi.program.transaction.Transaction;
 
 public interface TransactionElementType<O> extends SupplierElementType {

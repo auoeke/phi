@@ -3,7 +3,7 @@ package user11681.phi.program.element.type;
 import java.util.List;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import user11681.phi.program.transaction.Variable;
+import user11681.phi.program.type.Variable;
 
 public interface SupplierElementType extends ElementType {
     Variable output();

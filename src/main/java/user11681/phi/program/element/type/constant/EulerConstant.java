@@ -3,8 +3,8 @@ package user11681.phi.program.element.type.constant;
 import net.minecraft.client.util.math.MatrixStack;
 import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.program.element.Element;
-import user11681.phi.program.transaction.ValueType;
-import user11681.phi.program.transaction.Variable;
+import user11681.phi.program.type.ValueType;
+import user11681.phi.program.type.Variable;
 
 public class EulerConstant implements ConstantElementType {
     @Override

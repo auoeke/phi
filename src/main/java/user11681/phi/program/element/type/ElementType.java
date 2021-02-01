@@ -68,10 +68,10 @@ public interface ElementType {
 
     @Environment(EnvType.CLIENT)
     default List<Text> tooltip() {
-        return new ObjectArrayList<>(new Text[]{new LiteralText(String.format("%s: %s", this.group().name.getString(), this.name().getString()))});
+        return new ObjectArrayList<>(new Text[]{this.name()});
     }
 
     default Text name() {
-        return new TranslatableText(Localization.typeKey(this));
+        return new LiteralText(String.format("%s: %s", this.group().name.getString(), new TranslatableText(Localization.typeKey(this)).getString()));
     }
 }

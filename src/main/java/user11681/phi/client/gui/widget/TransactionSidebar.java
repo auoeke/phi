@@ -14,7 +14,7 @@ import user11681.phi.client.gui.ProgrammerScreenAware;
 import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.client.gui.Textures;
 import user11681.phi.program.element.type.TransactionElementType;
-import user11681.phi.program.transaction.NamedVariable;
+import user11681.phi.program.type.NamedVariable;
 
 public class TransactionSidebar extends AbstractParentElement implements Drawable, ProgrammerScreenAware {
     public static final int SIDEBAR_WIDTH = 80;
@@ -23,9 +23,13 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
     private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
     private final ProgrammerScreen screen;
+    private final int x;
+    private final int y;
 
-    public TransactionSidebar(ProgrammerScreen screen) {
+    public TransactionSidebar(ProgrammerScreen screen, int x, int y) {
         this.screen = screen;
+        this.x = x;
+        this.y = y;
     }
 
     @Override
@@ -40,8 +44,10 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
 
     @Override
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
-        ScreenUtil.bindTexture(Textures.sidebar);
-        drawTexture(matrixes, 0, 0, 0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 256, 256);
+        matrixes.push();
+        matrixes.translate(this.x, this.y, 0);
+
+        ScreenUtil.drawTexture(Textures.sidebar, matrixes, 0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 256, 256);
 
         TransactionElementType<?> type = (TransactionElementType<?>) this.screen.focusedSlot().element.type;
 
@@ -51,8 +57,7 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
             int arrowX = SIDEBAR_WIDTH - 26;
             int arrowY = 7 + 26 * i;
 
-            ScreenUtil.bindTexture(Textures.arrows);
-            drawTexture(matrixes, arrowX, arrowY, 0, 0, 22, 22, 22, 22);
+            ScreenUtil.drawTexture(Textures.arrows, matrixes, arrowX, arrowY, 22, 22);
 
             textRenderer.drawWithShadow(matrixes, inputs.get(i).name, 5, arrowY + 5, -1);
 
@@ -68,5 +73,7 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
                 matrixes.pop();
             }
         }
+
+        matrixes.pop();
     }
 }

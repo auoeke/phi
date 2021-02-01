@@ -3,7 +3,6 @@ package user11681.phi.client.gui;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import user11681.phi.Phi;
@@ -61,8 +60,7 @@ public class ElementSlot {
         }
 
         if (this.focused) {
-            ScreenUtil.bindTexture(focusedBorder);
-            DrawableHelper.drawTexture(matrixes, this.x, this.y, 0, 0, 16, 16, 16, 16);
+            ScreenUtil.drawTexture(focusedBorder, matrixes, this.x, this.y, 16, 16);
         }
     }
 }

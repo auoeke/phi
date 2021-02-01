@@ -7,10 +7,10 @@ import net.minecraft.util.math.Vec3d;
 import user11681.phi.client.Localization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
-import user11681.phi.program.transaction.NamedVariable;
+import user11681.phi.program.type.NamedVariable;
 import user11681.phi.program.transaction.Transaction;
-import user11681.phi.program.transaction.ValueType;
-import user11681.phi.program.transaction.Variable;
+import user11681.phi.program.type.ValueType;
+import user11681.phi.program.type.Variable;
 
 public class RotationOperator extends TexturedElementType implements OperatorElementType<Vec3d> {
     public RotationOperator(Identifier texture) {

@@ -17,6 +17,8 @@ public class Localization {
 
     public static final TranslatableText directionVariable = new TranslatableText("phi.variable.direction");
     public static final TranslatableText operandVariable = new TranslatableText("phi.variable.operand");
+    public static final TranslatableText multiplicand = new TranslatableText("phi.variable.multiplicand");
+    public static final TranslatableText multiplier = new TranslatableText("phi.variable.multiplier");
     public static final TranslatableText powerVariable = new TranslatableText("phi.variable.power");
     public static final TranslatableText productVariable = new TranslatableText("phi.variable.product");
     public static final TranslatableText targetVariable = new TranslatableText("phi.variable.target");

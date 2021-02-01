@@ -1,6 +1,5 @@
 package user11681.phi.client.gui;
 
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -22,7 +21,6 @@ public class ProgrammerScreen extends Screen {
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
 
-    private final ReferenceArrayList<ElementGrid> gridStates = new ReferenceArrayList<>();
     private final ElementGrid slots = new ElementGrid();
     private final BlockPos position;
 
@@ -67,7 +65,7 @@ public class ProgrammerScreen extends Screen {
         this.computeFrame();
 
         this.search = new ElementSearchWidget(this.textRenderer, this, 0, 0, 64, 10);
-        this.sidebar = new TransactionSidebar(this);
+        this.sidebar = new TransactionSidebar(this, this.backgroundX - TransactionSidebar.SIDEBAR_WIDTH, this.backgroundY + 25);
 
         this.slots.forEach((int x, int y, ElementSlot slot) -> {
             slot.x = this.backgroundX + 8 + 18 * x;
@@ -82,16 +80,10 @@ public class ProgrammerScreen extends Screen {
         ElementSlot focused = this.focusedSlot();
 
         if (focused.element != null && focused.element.type instanceof TransactionElementType) {
-            matrixes.push();
-            matrixes.translate(this.backgroundX - TransactionSidebar.SIDEBAR_WIDTH, this.backgroundY + 25, 0);
-
             this.sidebar.render(matrixes, mouseX, mouseY, delta);
-
-            matrixes.pop();
         }
 
-        ScreenUtil.bindTexture(Textures.background);
-        drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT);
+        ScreenUtil.drawTexture(Textures.background, matrixes, this.backgroundX, this.backgroundY, WIDTH, HEIGHT, 256, 256);
 
         for (ElementSlot element : this.slots) {
             element.render(matrixes);
@@ -216,10 +208,6 @@ public class ProgrammerScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    private boolean search() {
-        return this.buttons.contains(this.search);
-    }
-
     public ElementSlot focusedSlot() {
         return this.slots.get(this.x, this.y);
     }
@@ -230,8 +218,7 @@ public class ProgrammerScreen extends Screen {
     }
 
     private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
-        ScreenUtil.bindTexture(Textures.focusFrame);
-        drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
+        ScreenUtil.drawTexture(Textures.focusFrame, matrixes, this.frameX, this.frameY, 16, 16);
 
         if (hovered != null) {
             ScreenUtil.bindTexture(Textures.hoverFrame);
@@ -259,6 +246,10 @@ public class ProgrammerScreen extends Screen {
         if (slot != null && slot.element != null) {
             this.renderTooltip(matrixes, slot.element.type.tooltip(), x, y);
         }
+    }
+
+    private boolean search() {
+        return this.buttons.contains(this.search);
     }
 
     private void search(boolean active) {

@@ -11,9 +11,11 @@ import user11681.phi.Phi;
 import user11681.phi.client.Localization;
 import user11681.phi.program.element.group.ElementGroup;
 import user11681.phi.program.element.type.ElementType;
+import user11681.phi.program.type.SimpleType;
+import user11681.phi.program.type.ValueType;
 
 public class ResourceGenerator implements ModInitializer {
-    public static final RuntimeResourcePack resources = RuntimeResourcePack.create(Phi.id(Phi.ID).toString(), 7);
+    private static final RuntimeResourcePack resources = RuntimeResourcePack.create(Phi.id(Phi.ID).toString(), 7);
 
     private static transient JLang lang = JLang.lang();
 
@@ -28,12 +30,12 @@ public class ResourceGenerator implements ModInitializer {
 
         type(ElementType.euler, "Euler's constant");
         type(ElementType.number, "number");
-        type(ElementType.pi, "\u03c0");
-        type(ElementType.tau, "\u03c4");
+        type(ElementType.pi, "π");
+        type(ElementType.tau, "τ");
 
         type(ElementType.accelerate, "accelerate");
         type(ElementType.blink, "blink");
-        type(ElementType.explode, "accelerate");
+        type(ElementType.explode, "explode");
 
         type(ElementType.multiply, "multiply");
         type(ElementType.rotation, "rotation");
@@ -41,13 +43,15 @@ public class ResourceGenerator implements ModInitializer {
         type(ElementType.attacker, "attacker");
         type(ElementType.executor, "executor");
 
-        text(Localization.entityType, "Entity");
-        text(Localization.numberType, "Number");
-        text(Localization.positionType, "Position");
-        text(Localization.vectorType, "Vector");
+        type(ValueType.entity, "Entity");
+        type(ValueType.number, "Number");
+        type(ValueType.position, "Position");
+        type(ValueType.vector, "Vector");
 
         text(Localization.directionVariable, "Direction");
         text(Localization.operandVariable, "Operand");
+        text(Localization.multiplicand, "Multiplicand");
+        text(Localization.multiplier, "Multiplier");
         text(Localization.powerVariable, "Power");
         text(Localization.productVariable, "Product");
         text(Localization.targetVariable, "Target");
@@ -62,6 +66,10 @@ public class ResourceGenerator implements ModInitializer {
 
     private static void type(ElementType type, String name) {
         lang.entry(Localization.typeKey(type), name);
+    }
+
+    private static void type(SimpleType type, String name) {
+        lang.entry(type.name().getKey(), name);
     }
 
     private static void text(TranslatableText text, String name) {
