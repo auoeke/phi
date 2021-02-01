@@ -17,7 +17,7 @@ public interface SupplierElementType extends ElementType {
         Variable output = this.output();
 
         if (output != null) {
-            tooltip.add(new LiteralText(String.format("Output: %s (%s)", output.name.getString(), output.type.name().getString())));
+            tooltip.add(new LiteralText(String.format("Output: %s", output.format().getString())));
         }
 
         return tooltip;

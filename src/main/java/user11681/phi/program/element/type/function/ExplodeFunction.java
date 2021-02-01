@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import user11681.phi.client.Localization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
+import user11681.phi.program.transaction.NamedVariable;
 import user11681.phi.program.transaction.Transaction;
 import user11681.phi.program.transaction.ValueType;
 import user11681.phi.program.transaction.Variable;
@@ -23,8 +24,8 @@ public class ExplodeFunction extends TexturedElementType implements FunctionElem
     }
 
     @Override
-    public List<Variable> input() {
-        return Arrays.asList(ValueType.position.variable(Localization.targetVariable), ValueType.number.variable(Localization.powerVariable));
+    public List<NamedVariable> input() {
+        return Arrays.asList(Variable.named(ValueType.position, Localization.targetVariable), Variable.named(ValueType.number, Localization.powerVariable));
     }
 
     @Override

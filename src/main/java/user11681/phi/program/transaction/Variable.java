@@ -1,18 +1,23 @@
 package user11681.phi.program.transaction;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class Variable {
     public final ValueType type;
-    public final Text name;
 
-    public Variable(ValueType type, String name) {
-        this(type, new TranslatableText(name));
+    protected Variable(ValueType type) {
+        this.type = type;
     }
 
-    public Variable(ValueType type, Text name) {
-        this.type = type;
-        this.name = name;
+    public static Variable variable(ValueType type) {
+        return new Variable(type);
+    }
+
+    public static NamedVariable named(ValueType type, Text name) {
+        return new NamedVariable(type, name);
+    }
+
+    public Text format() {
+        return this.type.name();
     }
 }

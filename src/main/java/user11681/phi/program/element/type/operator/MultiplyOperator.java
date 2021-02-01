@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier;
 import user11681.phi.client.Localization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
+import user11681.phi.program.transaction.NamedVariable;
 import user11681.phi.program.transaction.Transaction;
 import user11681.phi.program.transaction.ValueType;
 import user11681.phi.program.transaction.Variable;
@@ -17,12 +18,12 @@ public class MultiplyOperator extends TexturedElementType implements OperatorEle
 
     @Override
     public Variable output() {
-        return ValueType.number.variable(Localization.productVariable);
+        return Variable.variable(ValueType.number);
     }
 
     @Override
-    public List<Variable> input() {
-        return Collections.singletonList(ValueType.number.variable(Localization.operandVariable));
+    public List<NamedVariable> input() {
+        return Collections.singletonList(Variable.named(ValueType.number, Localization.operandVariable));
     }
 
     @Override

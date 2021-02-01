@@ -4,11 +4,11 @@ import java.util.List;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import user11681.phi.program.element.Element;
+import user11681.phi.program.transaction.NamedVariable;
 import user11681.phi.program.transaction.Transaction;
-import user11681.phi.program.transaction.Variable;
 
 public interface TransactionElementType<O> extends SupplierElementType {
-    List<Variable> input();
+    List<NamedVariable> input();
 
     void process(Element element, Transaction<O> transaction);
 
@@ -18,7 +18,7 @@ public interface TransactionElementType<O> extends SupplierElementType {
 
         tooltip.add(new LiteralText("Inputs:"));
 
-        this.input().forEach((Variable variable) -> tooltip.add(new LiteralText(String.format("- %s (%s)", variable.name.getString(), variable.type.name().getString()))));
+        this.input().forEach((NamedVariable variable) -> tooltip.add(new LiteralText(String.format("- %s", variable.format().getString()))));
 
         return tooltip;
     }

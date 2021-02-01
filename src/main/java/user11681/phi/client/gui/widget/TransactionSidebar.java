@@ -14,7 +14,7 @@ import user11681.phi.client.gui.ProgrammerScreenAware;
 import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.client.gui.Textures;
 import user11681.phi.program.element.type.TransactionElementType;
-import user11681.phi.program.transaction.Variable;
+import user11681.phi.program.transaction.NamedVariable;
 
 public class TransactionSidebar extends AbstractParentElement implements Drawable, ProgrammerScreenAware {
     public static final int SIDEBAR_WIDTH = 80;
@@ -45,7 +45,7 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
 
         TransactionElementType<?> type = (TransactionElementType<?>) this.screen.focusedSlot().element.type;
 
-        List<Variable> inputs = type.input();
+        List<NamedVariable> inputs = type.input();
 
         for (int i = 0; i < inputs.size(); i++) {
             int arrowX = SIDEBAR_WIDTH - 26;
