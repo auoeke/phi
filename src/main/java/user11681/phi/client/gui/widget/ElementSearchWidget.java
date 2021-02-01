@@ -1,4 +1,4 @@
-package user11681.phi.client.gui;
+package user11681.phi.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
@@ -10,6 +10,10 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import user11681.phi.Phi;
+import user11681.phi.client.gui.ElementSlot;
+import user11681.phi.client.gui.ProgrammerScreen;
+import user11681.phi.client.gui.ProgrammerScreenAware;
+import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.program.element.type.ElementType;
 
 public class ElementSearchWidget extends TextFieldWidget implements ProgrammerScreenAware {

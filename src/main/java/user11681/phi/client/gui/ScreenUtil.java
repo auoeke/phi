@@ -3,11 +3,14 @@ package user11681.phi.client.gui;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ScreenUtil {
+    public static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+
     private static final TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 
     public static boolean inside(double x, double y, double startX, double startY, double width, double height) {

@@ -2,6 +2,7 @@ package user11681.phi.program.element.type.parameter;
 
 import user11681.phi.program.ProgramContext;
 import user11681.phi.program.element.Element;
+import user11681.phi.program.element.group.ElementGroup;
 import user11681.phi.program.element.type.ElementType;
 
 public interface ParameterElementType<R> extends ElementType {
@@ -13,7 +14,7 @@ public interface ParameterElementType<R> extends ElementType {
     }
 
     @Override
-    default String namespace() {
-        return "parameter";
+    default ElementGroup group() {
+        return ElementGroup.parameter;
     }
 }

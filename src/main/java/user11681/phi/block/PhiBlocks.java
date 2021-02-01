@@ -4,5 +4,5 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Material;
 
 public class PhiBlocks {
-    public static final ProgrammerBlock programmer = new ProgrammerBlock(AbstractBlock.Settings.of(Material.METAL));
+    public static final CompilerBlock assembler = new CompilerBlock(AbstractBlock.Settings.of(Material.METAL));
 }

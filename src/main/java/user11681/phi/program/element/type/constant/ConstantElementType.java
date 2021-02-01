@@ -1,13 +1,13 @@
-package user11681.phi.program.element.type.operator;
+package user11681.phi.program.element.type.constant;
 
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.group.ElementGroup;
-import user11681.phi.program.element.type.TransactionElementType;
+import user11681.phi.program.element.type.SupplierElementType;
 
-public interface OperatorElementType<O> extends TransactionElementType<O> {
+public interface ConstantElementType extends SupplierElementType {
     @Override
     default ElementGroup group() {
-        return ElementGroup.operator;
+        return ElementGroup.constant;
     }
 
     @Override

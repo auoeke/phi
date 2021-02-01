@@ -34,7 +34,7 @@ public class Program implements Cloneable {
         ListTag elements = tag.getList("elements", NbtType.COMPOUND);
 
         if (elements != null) {
-            this.elements.forEach((int i, Element element) -> this.elements.set(i, Element.fromTag(elements.getCompound(i))));
+            this.elements.forEach((int i) -> this.elements.set(i, Element.fromTag(elements.getCompound(i))));
         }
     }
 

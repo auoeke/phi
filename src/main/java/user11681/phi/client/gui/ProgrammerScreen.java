@@ -1,45 +1,33 @@
 package user11681.phi.client.gui;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3f;
 import org.lwjgl.glfw.GLFW;
-import user11681.phi.Phi;
+import user11681.phi.client.gui.widget.ElementSearchWidget;
+import user11681.phi.client.gui.widget.TransactionSidebar;
 import user11681.phi.network.server.InsertElementPacket;
 import user11681.phi.program.Program;
 import user11681.phi.program.element.type.ElementType;
 import user11681.phi.program.element.type.TransactionElementType;
-import user11681.phi.program.transaction.Variable;
 import user11681.phi.util.Point;
 
 @Environment(EnvType.CLIENT)
 public class ProgrammerScreen extends Screen {
-    private static final Identifier background = Phi.id("textures/gui/programmer.png");
-    private static final Identifier sidebar = Phi.id("textures/gui/programmer_sidebar.png");
-    private static final Identifier focusFrame = Phi.id("textures/gui/focus_frame.png");
-    private static final Identifier hoverFrame = Phi.id("textures/gui/hover_frame.png");
-    private static final Identifier arrow = Phi.id("textures/gui/arrow.png");
-    private static final Identifier arrows = Phi.id("textures/gui/arrows.png");
-
     private static final int WIDTH = 176;
     private static final int HEIGHT = 176;
-
-    private static final int SIDEBAR_WIDTH = 80;
-    private static final int SIDEBAR_HEIGHT = 126;
 
     private final ReferenceArrayList<ElementGrid> gridStates = new ReferenceArrayList<>();
     private final ElementGrid slots = new ElementGrid();
     private final BlockPos position;
 
     private ElementSearchWidget search;
+    private TransactionSidebar sidebar;
 
     private int x = 4;
     private int y = 4;
@@ -79,6 +67,7 @@ public class ProgrammerScreen extends Screen {
         this.computeFrame();
 
         this.search = new ElementSearchWidget(this.textRenderer, this, 0, 0, 64, 10);
+        this.sidebar = new TransactionSidebar(this);
 
         this.slots.forEach((int x, int y, ElementSlot slot) -> {
             slot.x = this.backgroundX + 8 + 18 * x;
@@ -93,10 +82,15 @@ public class ProgrammerScreen extends Screen {
         ElementSlot focused = this.focusedSlot();
 
         if (focused.element != null && focused.element.type instanceof TransactionElementType) {
-            this.renderTransactionSidebar(matrixes);
+            matrixes.push();
+            matrixes.translate(this.backgroundX - TransactionSidebar.SIDEBAR_WIDTH, this.backgroundY + 25, 0);
+
+            this.sidebar.render(matrixes, mouseX, mouseY, delta);
+
+            matrixes.pop();
         }
 
-        ScreenUtil.bindTexture(background);
+        ScreenUtil.bindTexture(Textures.background);
         drawTexture(matrixes, this.backgroundX, this.backgroundY, 0, 0, WIDTH, HEIGHT);
 
         for (ElementSlot element : this.slots) {
@@ -107,9 +101,9 @@ public class ProgrammerScreen extends Screen {
 
         this.renderFrame(matrixes, hovered);
 
-        super.render(matrixes, mouseX, mouseY, delta);
-
-        if (!this.search() && (!hasControlDown() || this.renderTooltip(focused, matrixes))) {
+        if (this.search()) {
+            this.search.render(matrixes, mouseX, mouseY, delta);
+        } else if (!hasControlDown() || this.renderTooltip(this.focusedSlot(), matrixes)) {
             this.renderTooltip(hovered, matrixes, mouseX, mouseY);
         }
     }
@@ -226,7 +220,7 @@ public class ProgrammerScreen extends Screen {
         return this.buttons.contains(this.search);
     }
 
-    private ElementSlot focusedSlot() {
+    public ElementSlot focusedSlot() {
         return this.slots.get(this.x, this.y);
     }
 
@@ -236,11 +230,11 @@ public class ProgrammerScreen extends Screen {
     }
 
     private void renderFrame(MatrixStack matrixes, ElementSlot hovered) {
-        ScreenUtil.bindTexture(focusFrame);
+        ScreenUtil.bindTexture(Textures.focusFrame);
         drawTexture(matrixes, this.frameX, this.frameY, 0, 0, 16, 16, 16, 16);
 
         if (hovered != null) {
-            ScreenUtil.bindTexture(hoverFrame);
+            ScreenUtil.bindTexture(Textures.hoverFrame);
 
             if (this.frameX == hovered.x && this.frameY == hovered.y) {
                 drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 8, 8, 16, 16);
@@ -249,48 +243,6 @@ public class ProgrammerScreen extends Screen {
                 drawTexture(matrixes, hovered.x, hovered.y, 0, 0, 16, 16, 16, 16);
             }
         }
-    }
-
-    private void renderTransactionSidebar(MatrixStack matrixes) {
-        ScreenUtil.bindTexture(sidebar);
-
-        matrixes.push();
-        matrixes.translate(this.backgroundX - SIDEBAR_WIDTH, this.backgroundY + 25, 0);
-
-        drawTexture(matrixes, 0, 0, 0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 256, 256);
-
-        ElementSlot slot = this.focusedSlot();
-        TransactionElementType<?> type = (TransactionElementType<?>) slot.element.type;
-
-        List<Variable> inputs = type.input();
-
-        for (int i = 0; i < inputs.size(); i++) {
-            int arrowX = SIDEBAR_WIDTH - 26;
-            int arrowY = 7 + 26 * i;
-
-            ScreenUtil.bindTexture(arrows);
-            drawTexture(matrixes, arrowX, arrowY, 0, 0, 22, 22, 22, 22);
-
-            this.textRenderer.drawWithShadow(matrixes, inputs.get(i).name, 5, arrowY + 5, -1);
-
-            ScreenUtil.bindTexture(arrow);
-
-            for (int j = 0; j != 4; j++) {
-                matrixes.push();
-                matrixes.translate(arrowX + 3, arrowY + 3, 0);
-                matrixes.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion((float) (Math.PI / 2 * j)));
-
-                drawTexture(matrixes, -16 * (j / 2), -16 * ((j + 1 & 2) >> 1), 0, 0, 16, 16, 16, 16);
-
-                matrixes.pop();
-            }
-        }
-
-        matrixes.pop();
-    }
-
-    private void renderArrows(MatrixStack matrixes, int x, int y) {
-
     }
 
     public boolean renderTooltip(ElementSlot slot, MatrixStack matrixes) {

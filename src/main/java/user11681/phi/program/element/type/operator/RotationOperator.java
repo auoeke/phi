@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import user11681.phi.client.PhiLocalization;
+import user11681.phi.client.Localization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
 import user11681.phi.program.transaction.Transaction;
@@ -18,12 +18,12 @@ public class RotationOperator extends TexturedElementType implements OperatorEle
 
     @Override
     public Variable output() {
-        return ValueType.vector.variable(PhiLocalization.directionVariable);
+        return ValueType.vector.variable(Localization.directionVariable);
     }
 
     @Override
     public List<Variable> input() {
-        return Collections.singletonList(ValueType.entity.variable(PhiLocalization.targetVariable));
+        return Collections.singletonList(ValueType.entity.variable(Localization.targetVariable));
     }
 
     @Override

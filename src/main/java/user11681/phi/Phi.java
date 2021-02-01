@@ -12,12 +12,14 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import user11681.phi.block.ProgrammerBlockEntity;
+import user11681.phi.block.AssemblerBlockEntity;
+import user11681.phi.block.PhiBlocks;
 import user11681.phi.component.DriveComponent;
 import user11681.phi.component.InterpreterComponent;
 import user11681.phi.component.PhiComponent;
@@ -45,12 +47,18 @@ public class Phi implements ModInitializer, ClientModInitializer, EntityComponen
         Registry.register(Registry.ITEM, id(path), item);
     }
 
+    private static void block(String path, Block block) {
+        Registry.register(Registry.BLOCK, id(path), block);
+    }
+
     @Override
     public void onInitialize() {
-        item("cad", PhiItems.interpreter);
-        item("programmer", PhiItems.programmer);
+        block("assembler", PhiBlocks.assembler);
 
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, id("programmer"), ProgrammerBlockEntity.type);
+        item("cad", PhiItems.interpreter);
+        item("assembler", PhiItems.programmer);
+
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, id("assembler"), AssemblerBlockEntity.type);
 
         InsertElementPacket.instance.register();
     }
@@ -58,6 +66,8 @@ public class Phi implements ModInitializer, ClientModInitializer, EntityComponen
     @Environment(EnvType.CLIENT)
     @Override
     public void onInitializeClient() {
+//        BlockRenderLayerMap.INSTANCE.putBlock(PhiBlocks.compiler, RenderLayer.getCutout());
+
         OpenProgrammerPacket.instance.register();
     }
 

@@ -8,12 +8,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import user11681.phi.program.Program;
 
-public class ProgrammerBlockEntity extends BlockEntity {
-    public static final BlockEntityType<ProgrammerBlockEntity> type = FabricBlockEntityTypeBuilder.create(ProgrammerBlockEntity::new, PhiBlocks.programmer).build();
+public class AssemblerBlockEntity extends BlockEntity {
+    public static final BlockEntityType<AssemblerBlockEntity> type = FabricBlockEntityTypeBuilder.create(AssemblerBlockEntity::new, PhiBlocks.assembler).build();
 
     public final Program program = new Program();
 
-    public ProgrammerBlockEntity(BlockPos pos, BlockState state) {
+    public AssemblerBlockEntity(BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
@@ -21,10 +21,10 @@ public class ProgrammerBlockEntity extends BlockEntity {
     public void fromTag(CompoundTag tag) {
         super.fromTag(tag);
 
-        CompoundTag elements = tag.getCompound("program");
+        CompoundTag program = tag.getCompound("program");
 
-        if (elements != null) {
-            this.program.fromTag(elements);
+        if (program != null) {
+            this.program.fromTag(program);
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import user11681.phi.client.PhiLocalization;
+import user11681.phi.client.Localization;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.TexturedElementType;
 import user11681.phi.program.transaction.Transaction;
@@ -24,7 +24,7 @@ public class AccelerateFunction extends TexturedElementType implements FunctionE
 
     @Override
     public List<Variable> input() {
-        return Arrays.asList(ValueType.entity.variable(PhiLocalization.targetVariable), ValueType.vector.variable(PhiLocalization.directionVariable));
+        return Arrays.asList(ValueType.entity.variable(Localization.targetVariable), ValueType.vector.variable(Localization.directionVariable), ValueType.number.variable(Localization.powerVariable));
     }
 
     @Override

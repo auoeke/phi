@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import user11681.phi.program.element.type.ElementType;
 
-@SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "ConstantConditions"})
+@SuppressWarnings("ConstantConditions")
 public class Element implements Cloneable {
     public final ElementType type;
     public final CompoundTag tag;

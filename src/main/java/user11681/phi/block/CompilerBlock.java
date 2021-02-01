@@ -15,19 +15,19 @@ import org.jetbrains.annotations.Nullable;
 import user11681.phi.network.client.OpenProgrammerPacket;
 
 @SuppressWarnings("deprecation")
-public class ProgrammerBlock extends BlockWithEntity {
-    public ProgrammerBlock(Settings settings) {
+public class CompilerBlock extends BlockWithEntity {
+    public CompilerBlock(Settings settings) {
         super(settings);
     }
 
-    protected static ProgrammerBlockEntity entity(BlockView world, BlockPos position) {
-        return (ProgrammerBlockEntity) world.getBlockEntity(position);
+    protected static AssemblerBlockEntity entity(BlockView world, BlockPos position) {
+        return (AssemblerBlockEntity) world.getBlockEntity(position);
     }
 
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return ProgrammerBlockEntity.type.instantiate(pos, state);
+        return AssemblerBlockEntity.type.instantiate(pos, state);
     }
 
     @Override

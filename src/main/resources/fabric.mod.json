@@ -10,7 +10,7 @@
     },
 
     "entrypoints": {
-        "main": ["user11681.phi.Phi"],
+        "main": ["user11681.phi.Phi", "user11681.phi.resource.ResourceGenerator"],
         "client": ["user11681.phi.Phi"],
         "cardinal-components": ["user11681.phi.Phi"]
     },
