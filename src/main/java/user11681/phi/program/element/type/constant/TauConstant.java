@@ -1,7 +1,6 @@
 package user11681.phi.program.element.type.constant;
 
 import net.minecraft.client.util.math.MatrixStack;
-import user11681.phi.client.Localization;
 import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.transaction.ValueType;
@@ -15,6 +14,6 @@ public class TauConstant implements ConstantElementType {
 
     @Override
     public Variable output() {
-        return ValueType.number.variable(Localization.numberType);
+        return Variable.variable(ValueType.number);
     }
 }
