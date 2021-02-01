@@ -135,7 +135,7 @@ public class ProgrammerScreen extends Screen {
 
         if (keyCode == GLFW.GLFW_KEY_DELETE) {
             if (Screen.hasControlDown() && Screen.hasShiftDown()) {
-                this.slots.forEach((ElementSlot slot) -> slot.element = null);
+                this.slots.clear();
             } else {
                 this.focusedSlot().element = null;
             }
