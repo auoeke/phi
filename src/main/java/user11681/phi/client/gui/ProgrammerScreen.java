@@ -44,7 +44,7 @@ public class ProgrammerScreen extends Screen {
 
         this.position = position;
 
-        this.slots.forEach((int x, int y, ElementSlot slot) -> slot.element = program.elements.get(x, y));
+        this.slots.forEach((int x, int y, GridElementSlot slot) -> slot.element = program.elements.get(x, y));
     }
 
     @Override
@@ -67,17 +67,14 @@ public class ProgrammerScreen extends Screen {
         this.search = new ElementSearchWidget(this.textRenderer, this, 0, 0, 64, 10);
         this.sidebar = new TransactionSidebar(this, this.backgroundX - TransactionSidebar.SIDEBAR_WIDTH, this.backgroundY + 25);
 
-        this.slots.forEach((int x, int y, ElementSlot slot) -> {
-            slot.x = this.backgroundX + 8 + 18 * x;
-            slot.y = this.backgroundY + 8 + 18 * y;
-        });
+        this.slots.forEach((int x, int y, GridElementSlot slot) -> slot.index(x, y).position(this.backgroundX + 8 + 18 * x, this.backgroundY + 8 + 18 * y));
     }
 
     @Override
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrixes);
 
-        ElementSlot focused = this.focusedSlot();
+        GridElementSlot focused = this.focusedSlot();
 
         if (focused.element != null && focused.element.type instanceof TransactionElementType) {
             this.sidebar.render(matrixes, mouseX, mouseY, delta);
@@ -208,7 +205,7 @@ public class ProgrammerScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    public ElementSlot focusedSlot() {
+    public GridElementSlot focusedSlot() {
         return this.slots.get(this.x, this.y);
     }
 

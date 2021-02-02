@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 import user11681.phi.util.ProgramGrid;
 
 @Environment(EnvType.CLIENT)
-public class ElementGrid extends ProgramGrid<ElementSlot> {
+public class ElementGrid extends ProgramGrid<GridElementSlot> {
     public ElementGrid() {
-        this.forEach((int i) -> this.elements.set(i, new ElementSlot()));
+        this.forEach((int i) -> this.elements.set(i, new GridElementSlot().grid(this)));
     }
 
     @Override

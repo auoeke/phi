@@ -2,13 +2,12 @@ package user11681.phi.client.gui.widget;
 
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3f;
+import user11681.phi.client.gui.GridElementSlot;
 import user11681.phi.client.gui.ProgrammerScreen;
 import user11681.phi.client.gui.ProgrammerScreenAware;
 import user11681.phi.client.gui.ScreenUtil;
@@ -19,8 +18,6 @@ import user11681.phi.program.type.NamedVariable;
 public class TransactionSidebar extends AbstractParentElement implements Drawable, ProgrammerScreenAware {
     public static final int SIDEBAR_WIDTH = 80;
     public static final int SIDEBAR_HEIGHT = 126;
-
-    private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
     private final ProgrammerScreen screen;
 
@@ -50,7 +47,8 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
 
         ScreenUtil.drawTexture(Textures.sidebar, matrixes, 0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 256, 256);
 
-        TransactionElementType<?> type = (TransactionElementType<?>) this.screen.focusedSlot().element.type;
+        GridElementSlot focused = this.screen.focusedSlot();
+        TransactionElementType<?> type = (TransactionElementType<?>) focused.element.type;
 
         List<NamedVariable> inputs = type.input();
 
@@ -60,7 +58,7 @@ public class TransactionSidebar extends AbstractParentElement implements Drawabl
 
             ScreenUtil.drawTexture(Textures.arrows, matrixes, arrowX, arrowY, 22, 22);
 
-            textRenderer.drawWithShadow(matrixes, inputs.get(i).name, 5, arrowY + 5, -1);
+            ScreenUtil.textRenderer.drawWithShadow(matrixes, inputs.get(i).name, 5, arrowY + 5, -1);
 
             ScreenUtil.bindTexture(Textures.arrow);
 

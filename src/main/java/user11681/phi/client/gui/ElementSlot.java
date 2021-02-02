@@ -4,15 +4,11 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import user11681.phi.Phi;
 import user11681.phi.program.element.Element;
 import user11681.phi.program.element.type.ElementType;
 
 @Environment(EnvType.CLIENT)
 public class ElementSlot {
-    private static final Identifier focusedBorder = Phi.id("textures/gui/focused_slot.png");
-
     public Element element;
 
     public int x;
@@ -60,7 +56,7 @@ public class ElementSlot {
         }
 
         if (this.focused) {
-            ScreenUtil.drawTexture(focusedBorder, matrixes, this.x, this.y, 16, 16);
+            ScreenUtil.drawTexture(Textures.focusedBorder, matrixes, this.x, this.y, 16, 16);
         }
     }
 }

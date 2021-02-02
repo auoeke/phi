@@ -16,6 +16,7 @@ import user11681.phi.client.gui.ProgrammerScreen;
 import user11681.phi.client.gui.ProgrammerScreenAware;
 import user11681.phi.client.gui.ScreenUtil;
 import user11681.phi.program.element.type.ElementType;
+import user11681.phi.util.Util;
 
 public class ElementSearchWidget extends TextFieldWidget implements ProgrammerScreenAware {
     public static final int WIDTH = 89;
@@ -52,11 +53,12 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
 
     @Override
     public void render(MatrixStack matrixes, int mouseX, int mouseY, float delta) {
+        matrixes.push();
+        matrixes.translate(this.backgroundX, this.backgroundY, 0);
+
         RenderSystem.enableBlend();
 
-        ScreenUtil.drawTexture(search, matrixes, this.backgroundX, this.backgroundY, WIDTH, HEIGHT, 128, 128);
-
-        super.render(matrixes, mouseX, mouseY, delta);
+        ScreenUtil.drawTexture(search, matrixes, 0, 0, WIDTH, HEIGHT, 128, 128);
 
         this.hovered = null;
 
@@ -71,6 +73,10 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
         if (!Screen.hasControlDown() || this.renderTooltip(this.focused, matrixes)) {
             this.renderTooltip(this.hovered, matrixes, mouseX, mouseY);
         }
+
+        matrixes.pop();
+
+        super.render(matrixes, mouseX, mouseY, delta);
     }
 
     @Override
@@ -90,9 +96,7 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
             if (!this.slots.isEmpty()) {
                 int change = (modifiers & GLFW.GLFW_MOD_SHIFT) == 0 ? 1 : this.slots.size() - 1;
 
-                this.focused.focused = false;
-                this.focused = this.slots.get((this.slots.indexOf(this.focused) + change) % this.slots.size());
-                this.focused.focused = true;
+                this.focus(this.slots.get((this.slots.indexOf(this.focused) + change) % this.slots.size()));
             }
 
             return true;
@@ -113,11 +117,7 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        ElementSlot slot = this.slot(mouseX, mouseY);
-
-        if (slot != null) {
-            this.screen.insertElement(slot.element.type);
-        }
+        Util.ifNonnull(this.slot(mouseX, mouseY), (ElementSlot slot) -> this.screen.insertElement(slot.element.type));
 
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -143,15 +143,15 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
 
     private void computeElements() {
         String filter = this.getText().toLowerCase(Locale.ROOT);
-        int order = 0;
+        int index = 0;
 
         ObjectArrayList<ElementSlot> newSlots = new ObjectArrayList<>();
 
         for (ElementType type : ElementType.registry) {
             if (type.name().getString().toLowerCase(Locale.ROOT).contains(filter)) {
-                newSlots.add(new ElementSlot().element(type).position(this.backgroundX + BORDER_PADDING + (16 + PADDING) * (order % ROW_LENGTH), this.backgroundY + 20 + 18 * (order / ROW_LENGTH)));
+                newSlots.add(new ElementSlot().element(type).position(BORDER_PADDING + (16 + PADDING) * (index % ROW_LENGTH), 20 + 18 * (index / ROW_LENGTH)));
 
-                ++order;
+                ++index;
             }
         }
 
@@ -171,20 +171,16 @@ public class ElementSearchWidget extends TextFieldWidget implements ProgrammerSc
     }
 
     private void focus(ElementSlot slot) {
-        if (this.focused != null) {
-            this.focused.focused = false;
-        }
+        Util.ifNonnull(this.focused, () -> this.focused.focused = false);
 
         this.focused = slot;
 
-        if (slot != null) {
-            slot.focused = true;
-        }
+        Util.ifNonnull(slot, () -> slot.focused = true);
     }
 
     private ElementSlot slot(double x, double y) {
         for (ElementSlot slot : this.slots) {
-            if (x >= slot.x && x <= slot.x + 16 && y >= slot.y && y <= slot.y + 16) {
+            if (ScreenUtil.inside(x, y, slot.x, slot.y, 16, 16)) {
                 return slot;
             }
         }

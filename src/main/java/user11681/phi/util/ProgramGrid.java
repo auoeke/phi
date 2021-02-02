@@ -37,7 +37,8 @@ public class ProgramGrid<T> implements Iterable<T> {
         Arrays.fill(this.array, null);
     }
 
-    public Point find(T element) {
+    @SuppressWarnings("SuspiciousMethodCalls")
+    public Point find(Object element) {
         if (element == null) {
             return null;
         }
@@ -71,13 +72,13 @@ public class ProgramGrid<T> implements Iterable<T> {
         }
     }
 
-    public void forEach(ListConsumer<T> action) {
+    public void forEach(ListConsumer<? super T> action) {
         for (int i = 0; i < LENGTH; i++) {
             action.accept(i, this.get(i));
         }
     }
 
-    public void forEach(GridConsumer<T> action) {
+    public void forEach(GridConsumer<? super T> action) {
         for (int i = 0; i < LENGTH; i++) {
             action.accept(i % Program.SIZE, i / Program.SIZE, this.get(i));
         }
